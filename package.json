@@ -1,9 +1,20 @@
 {
+    "name": "SpotifySDKPlugin",
+    "version": "0.0.1",
+    "description": "Cordova wrapper for the Spotify iOS SDK",
     "cordova": {
         "id": "cordova-spotify-ios"
     },
     "platforms": [
         "ios"
     ],
+    "keywords": [
+        "cordova",
+        "cordova-ios",
+        "spotify",
+        "spotify-ios",
+        "spotify-sdk"
+    ],
+    "author": "Mathias Kjeldsen",
     "license": "MIT"
 }
