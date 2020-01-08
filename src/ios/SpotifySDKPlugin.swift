@@ -1,11 +1,14 @@
 @objc(SpotifySDKPlugin) class SpotifySDKPlugin: CDVPlugin {
-    @objc(runAuth:) func runAuth(command: CDVInvokedUrlCommand, clientId: String, redirectURL: String) {
-        var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "The Plugin Failed");
+    @objc(runAuth:) func runAuth(command: CDVInvokedUrlCommand) {
+        var result = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "The Plugin Failed");
+        let args = command.arguments;
+        if(args != nil) {
+            result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "Success")
+            var config = STPConfiguration(
+            clientID: args[0],
+            redirectURL: args[1])
+        }
         
-        print(clientId);
-
-        pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "The Plugin Succeeded");
-
-        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId);
+        self.commandDelegate!.send(result, callbackId: command.callbackId);
     }
 }

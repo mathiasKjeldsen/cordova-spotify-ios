@@ -7,6 +7,7 @@
         <clobbers target="SpotifySDKPlugin" />
     </js-module>
     <platform name="ios">
+        <hook type="before_plugin_install" src="install-ios.sh" />
         <config-file target="config.xml" parent="/*">
             <feature name="SpotifySDKPlugin">
                 <param name="ios-package" value="SpotifySDKPlugin"/>
