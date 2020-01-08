@@ -4,8 +4,8 @@ var PLUGIN_NAME = "SpotifySDKPlugin";
 
 var SpotifySDKPlugin = function() {}
 
-SpotifySDKPlugin.runAUth = function(onSuccess, onError) {
-    exec(onSuccess, onError, PLUGIN_NAME, "runAuth", []);
+SpotifySDKPlugin.runAuth = function(clientId, redirectURL, onSuccess, onError) {
+    exec(onSuccess, onError, PLUGIN_NAME, "runAuth", [clientId, redirectURL]);
 };
 
 module.exports = SpotifySDKPlugin;
