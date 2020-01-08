@@ -1,0 +1,9 @@
+{
+    "cordova": {
+        "id": "cordova-spotify-ios"
+    },
+    "platforms": [
+        "ios"
+    ],
+    "license": "MIT"
+}
