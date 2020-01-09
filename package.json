@@ -1,5 +1,5 @@
 {
-    "name": "SpotifySDKPlugin",
+    "name": "SpotifyiOS",
     "version": "0.0.1",
     "description": "Cordova wrapper for the Spotify iOS SDK",
     "cordova": {
