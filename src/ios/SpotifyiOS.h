@@ -1,19 +1,21 @@
 #define SpotifyiOS_h
-@import UIKit;
 #import <SpotifyiOS/SpotifyiOS.h>
+#import <Cordova/CDVPlugin.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SpotifyiOS : UIViewController <SPTSessionManagerDelegate>
+@interface SpotifyiOS : CDVPlugin <SPTSessionManagerDelegate>
 
 @property (nonatomic) SPTSessionManager *sessionManager;
 
-//- (void) pluginInitialize;
-- (void) runAuth;
-- (void) sessionManager:(SPTSessionManager *)manager didRenewSession:(SPTSession *)session;
-- (void) sessionManager:(SPTSessionManager *)manager didInitiateSession:(SPTSession *)session;
-- (void) sessionManager:(SPTSessionManager *)manager didFailWithError:(NSError *)error;
-- (BOOL) sessionManager:(SPTSessionManager *)manager shouldRequestAccessTokenWithAuthorizationCode:(SPTAuthorizationCode)code;
+- (BOOL) application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
+
++ (instancetype) sharedInstance;
+
+- (void) initialize:(CDVInvokedUrlCommand*)command;
+
+- (SPTConfiguration*) configuration;
+- (NSString*) accessToken;
 
 @end
 
