@@ -12,6 +12,8 @@
 
 @interface SpotifyiOSController : CDVPlugin {}
 
+- (void) pluginInitialize:(CDVInvokedUrlCommand*)command;
+
 - (void) execute:(CDVInvokedUrlCommand*)command;
 
 @end

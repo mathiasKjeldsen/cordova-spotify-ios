@@ -17,9 +17,15 @@
 
 @implementation SpotifyiOSController
 
-- (void) execute:(CDVInvokedUrlCommand*)command {
+- (void) pluginInitialize: (CDVInvokedUrlCommand*)command {
+    NSLog(@"PLUGIN INIT");
     self.rootViewController = [[SpotifyiOS alloc] init];
-    [self.rootViewController runAuth]
+}
+
+- (void) execute:(CDVInvokedUrlCommand*)command {
+    NSLog(@"EXECUTE RECEIVED");
+    self.rootViewController = [[SpotifyiOS alloc] init];
+    [self.rootViewController runAuth];
 }
 
 @end
