@@ -15,8 +15,6 @@ static SpotifyiOS *sharedInstance = nil;
     SPTConfiguration* _apiConfiguration;
     SPTSessionManager* _sessionManager;
 }
-- (void)initializeSessionManager:(NSDictionary*)options;
--(instancetype)init NS_UNAVAILABLE;
 
 @end
 
@@ -27,23 +25,17 @@ static SpotifyiOS *sharedInstance = nil;
 }
 
 - (SPTConfiguration*) configuration{
+    NSLog(@"config");
     return _apiConfiguration;
 }
 
-+ (instancetype)sharedInstance {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
++ (SpotifyiOS *)sharedInstance {
+    NSLog(@"SHARED INSTANCE CALLED?");
+    static dispatch_once_t predicate;
+    dispatch_once(&predicate,^{
         sharedInstance = [[SpotifyiOS alloc] init];
     });
     return sharedInstance;
-}
-
--(instancetype)init
-{
-    self = [super init];
-    if(self)
-    {}
-    return self;
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
@@ -95,15 +87,10 @@ static SpotifyiOS *sharedInstance = nil;
     return YES;
 }
 
-- (void) initialize:(CDVInvokedUrlCommand*)command{
+- (void) initialize:(NSDictionary*)options{
 
     NSLog(@"INIT CDV CALL");
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[SpotifyiOS alloc] init];
-        NSLog(@"instance created??");
-    });
-    
+        
     if(_isInitializing){
         NSLog(@"isInitializing");
         return;
@@ -116,8 +103,8 @@ static SpotifyiOS *sharedInstance = nil;
     }
     _isInitializing = YES;
 
-    _options = command.arguments[0];
-    [self initializeSessionManager:command.arguments[0]];
+    _options = options;
+    [self initializeSessionManager:options];
 }
 
 
@@ -137,9 +124,10 @@ static SpotifyiOS *sharedInstance = nil;
     
     _sessionManager = [SPTSessionManager sessionManagerWithConfiguration:_apiConfiguration delegate:self];
 
-    if(_sessionManager != nil) {
-        NSLog(@"session manager is alive @init");
+    if(_sessionManager != nil && sharedInstance) {
+        NSLog(@"session manager & sharedinstance is alive");
     }
+    
     if (@available(iOS 11, *)) {
         [_sessionManager
              initiateSessionWithScope:scope
