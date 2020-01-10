@@ -24,7 +24,6 @@
 
 - (void) execute:(CDVInvokedUrlCommand*)command {
     NSLog(@"EXECUTE RECEIVED");
-    self.rootViewController = [[SpotifyiOS alloc] init];
     [self.rootViewController runAuth];
 }
 
