@@ -25,12 +25,10 @@ static SpotifyiOS *sharedInstance = nil;
 }
 
 - (SPTConfiguration*) configuration{
-    NSLog(@"config");
     return _apiConfiguration;
 }
 
 + (SpotifyiOS *)sharedInstance {
-    NSLog(@"SHARED INSTANCE CALLED?");
     static dispatch_once_t predicate;
     dispatch_once(&predicate,^{
         sharedInstance = [[SpotifyiOS alloc] init];
@@ -82,23 +80,15 @@ static SpotifyiOS *sharedInstance = nil;
     NSLog(@"session renewed %@", session.description);
 }
 
-- (BOOL)sessionManager:(SPTSessionManager *)manager shouldRequestAccessTokenWithAuthorizationCode:(SPTAuthorizationCode)code {
-    NSLog(@"resquestaccesstokenwithauth %@", code);
-    return YES;
-}
-
 - (void) initialize:(NSDictionary*)options{
 
-    NSLog(@"INIT CDV CALL");
         
     if(_isInitializing){
-        NSLog(@"isInitializing");
         return;
     }
     
     if(_initialized && [_sessionManager session]!= nil && [_sessionManager session].isExpired == NO)
     {
-        NSLog(@"!initialized && session != nil %% isExpired == no");
         return;
     }
     _isInitializing = YES;
