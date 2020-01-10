@@ -9,26 +9,23 @@ static NSString * const SpotifyRedirectURLString = @"soundseek-party://callback"
 @implementation SpotifyiOS
 
 
-- (void)pluginInitialize
+- (void)viewDidLoad
 {
-    /*
-     This configuration object holds your client ID and redirect URL.
-     */
-    SPTConfiguration *configuration = [SPTConfiguration configurationWithClientID:SpotifyClientID
-                                                                      redirectURL:[NSURL URLWithString:SpotifyRedirectURLString]];
+    NSLog(@"doing auth now");
+    
+    SPTConfiguration *configuration =
+        [[SPTConfiguration alloc] initWithClientID:SpotifyClientID redirectURL:[NSURL URLWithString:SpotifyRedirectURLString]];
+    configuration.playURI = @"";
+    configuration.tokenSwapURL = [NSURL URLWithString: @"http://localhost:1234/swap"];
+    configuration.tokenRefreshURL = [NSURL URLWithString: @"http://localhost:1234/refresh"];
+    
+    self.sessionManager = [SPTSessionManager sessionManagerWithConfiguration:configuration delegate:self];
 
-    // Set these url's to your backend which contains the secret to exchange for an access token
-    // You can use the provided ruby script spotify_token_swap.rb for testing purposes
-    configuration.tokenSwapURL = [NSURL URLWithString: @"https://soundseek-mobile.herokuapp.com/exchange"];
-    configuration.tokenRefreshURL = [NSURL URLWithString: @"https://soundseek-mobile.herokuapp.com/refresh"];
+    NSLog(@"jobsdone");
+    
+}
 
-    /*
-     The session manager lets you authorize, get access tokens, and so on.
-     */
-    self.sessionManager = [SPTSessionManager sessionManagerWithConfiguration:configuration
-                                                                    delegate:self];}
-
-- (void) runAuth:(CDVInvokedUrlCommand*)command {
+- (void) runAuth {
     SPTScope scope = SPTUserLibraryReadScope | SPTPlaylistReadPrivateScope;
     NSLog(@"Run auth!");
     if (@available(iOS 11, *)) {
@@ -49,6 +46,24 @@ static NSString * const SpotifyRedirectURLString = @"soundseek-party://callback"
 - (void)sessionManager:(SPTSessionManager *)manager didRenewSession:(SPTSession *)session
 {
     NSLog(@"session renewed");
+}
+
+- (BOOL)sessionManager:(SPTSessionManager *)manager shouldRequestAccessTokenWithAuthorizationCode:(SPTAuthorizationCode)code {
+    NSLog(@"resquestaccesstokenwithauth");
+    return YES;
+}
+
+
+- (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
+    NSLog(@"app remote disc w err");
+}
+
+- (void)appRemote:(nonnull SPTAppRemote *)appRemote didFailConnectionAttemptWithError:(nullable NSError *)error {
+    NSLog(@"app remote dod fail connect attemp");
+}
+
+- (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)appRemote {
+    NSLog(@"app remote connecc");
 }
 
 @end

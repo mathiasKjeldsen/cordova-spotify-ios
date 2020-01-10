@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         id="cordova-spotify-ios" version="0.0.1">
-    <name>SpotifyiOS</name>
+    <name>SpotifyiOSController</name>
     <description>Cordova Spotify iOS SDK Plugin</description>
-    <js-module src="www/SpotifyiOS.js" name="SpotifyiOS">
-        <clobbers target="SpotifyiOS" />
+    <js-module src="www/SpotifyiOSController.js" name="SpotifyiOSController">
+        <clobbers target="SpotifyiOSController" />
     </js-module>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
-            <feature name="SpotifyiOS">
-                <param name="ios-package" value="SpotifyiOS"/>
+            <feature name="SpotifyiOSController">
+                <param name="ios-package" value="SpotifyiOSController"/>
             </feature>
         </config-file>
+        <header-file src="src/ios/SpotifyiOSController.h" />
+        <source-file src="src/ios/SpotifyiOSController.m" />
         <header-file src="src/ios/SpotifyiOS.h" />
         <source-file src="src/ios/SpotifyiOS.m" />
     </platform>
