@@ -6,17 +6,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SpotifyiOS : CDVPlugin <SPTSessionManagerDelegate>
 
-@property (nonatomic) SPTSessionManager *sessionManager;
+-(BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
 
-- (BOOL) application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
++(instancetype)sharedInstance;
 
-+ (instancetype) sharedInstance;
+-(void)initialize:(NSDictionary*)options;
 
-- (void) initialize:(CDVInvokedUrlCommand*)command;
-
-- (SPTConfiguration*) configuration;
-- (NSString*) accessToken;
-
+-(SPTConfiguration*) configuration;
+-(NSString*) accessToken;
 @end
 
 NS_ASSUME_NONNULL_END

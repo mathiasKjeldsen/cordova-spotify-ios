@@ -16,6 +16,7 @@ static SpotifyiOS *sharedInstance = nil;
     SPTSessionManager* _sessionManager;
 }
 - (void)initializeSessionManager:(NSDictionary*)options;
+-(instancetype)init NS_UNAVAILABLE;
 
 @end
 
@@ -29,35 +30,31 @@ static SpotifyiOS *sharedInstance = nil;
     return _apiConfiguration;
 }
 
-
 + (instancetype)sharedInstance {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[SpotifyiOS alloc] init];
+    });
     return sharedInstance;
 }
 
--(id)init
+-(instancetype)init
 {
-    if(sharedInstance == nil){
-        if(self = [super init])
-        {
-            _initialized = NO;
-            _isInitializing = NO;
-            _isRemoteConnected = NO;
-            _apiConfiguration = nil;
-            _sessionManager = nil;
-        }
-        static dispatch_once_t once;
-        dispatch_once(&once, ^{
-            sharedInstance = self;
-        });
-    }else{
-        NSLog(@"Returning shared instance");
-    }
-    return sharedInstance;
+    self = [super init];
+    if(self)
+    {}
+    return self;
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
+    NSLog(@"application from spotifyiOS");
     BOOL returnVal = NO;
+    NSLog(@"init session manager:");
+    NSLog(@"%@", _options[@"clientID"]);
+    NSLog(@"%@", _options[@"redirectURL"]);
+    NSLog(@"%@", _options[@"tokenSwapURL"]);
+    NSLog(@"%@", _options[@"tokenRefreshURL"]);
     if(_sessionManager != nil){
         NSLog(@"Setting application openURL and options on session manager");
         NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:TRUE];
@@ -68,7 +65,10 @@ static SpotifyiOS *sharedInstance = nil;
             returnVal = NO;
         }
         returnVal = [_sessionManager application:application openURL:URL options:options];
+    } else {
+        NSLog(@"sessionManager is nil");
     }
+    
     if(returnVal){
 //        [self resolveCompletions:_sessionManagerCallbacks result:nil];
     }
@@ -96,7 +96,14 @@ static SpotifyiOS *sharedInstance = nil;
 }
 
 - (void) initialize:(CDVInvokedUrlCommand*)command{
-        
+
+    NSLog(@"INIT CDV CALL");
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[SpotifyiOS alloc] init];
+        NSLog(@"instance created??");
+    });
+    
     if(_isInitializing){
         NSLog(@"isInitializing");
         return;
@@ -109,77 +116,35 @@ static SpotifyiOS *sharedInstance = nil;
     }
     _isInitializing = YES;
 
-    // store the options
     _options = command.arguments[0];
     [self initializeSessionManager:command.arguments[0]];
 }
 
 
 - (void)initializeSessionManager:(NSDictionary*)options{
-    // Create our configuration object
+    
+    NSLog(@"init session manager:");
+    NSLog(@"%@", options[@"clientID"]);
+    NSLog(@"%@", options[@"redirectURL"]);
+    NSLog(@"%@", options[@"tokenSwapURL"]);
+    NSLog(@"%@", options[@"tokenRefreshURL"]);
+
     _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
-    // Add swap and refresh urls to config if present
-    if(options[@"tokenSwapURL"] != nil){
         _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
-    }
-    
-    if(options[@"tokenRefreshURL"] != nil){
         _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
-    }
     
-    // Default Scope
     SPTScope scope = SPTAppRemoteControlScope | SPTUserFollowReadScope;
     
     _sessionManager = [SPTSessionManager sessionManagerWithConfiguration:_apiConfiguration delegate:self];
-    
+
+    if(_sessionManager != nil) {
+        NSLog(@"session manager is alive @init");
+    }
     if (@available(iOS 11, *)) {
-        [ self->_sessionManager
+        [_sessionManager
              initiateSessionWithScope:scope
              options:SPTDefaultAuthorizationOption
         ];
     }
 }
-
-/*const spotifyConfig: ApiConfig = {
-    clientID: "SPOTIFY_CLIENT_ID",
-    redirectURL: "SPOTIFY_REDIRECT_URL",
-    tokenRefreshURL: "SPOTIFY_TOKEN_REFRESH_URL",
-    tokenSwapURL: "SPOTIFY_TOKEN_SWAP_URL",
-    scope: ApiScope.AppRemoteControlScope | ApiScope.UserFollowReadScope
-}*/
-
-
-
-
-
-///////////////
-
-
-- (void)setConfig
-{
-    NSLog(@"doing auth now");
-    
-    SPTConfiguration *configuration =
-        [[SPTConfiguration alloc] initWithClientID:SpotifyClientID redirectURL:[NSURL URLWithString:SpotifyRedirectURLString]];
-    configuration.playURI = @"";
-    configuration.tokenSwapURL = [NSURL URLWithString: @"http://localhost:1234/swap"];
-    configuration.tokenRefreshURL = [NSURL URLWithString: @"http://localhost:1234/refresh"];
-    
-    self.sessionManager = [SPTSessionManager sessionManagerWithConfiguration:configuration delegate:self];
-
-    NSLog(@"jobsdone");
-    
-}
-
-
-
-- (void) runAuth {
-    SPTScope scope = SPTUserLibraryReadScope | SPTPlaylistReadPrivateScope;
-    NSLog(@"trying to init session now");
-    if (@available(iOS 11, *)) {
-        [self.sessionManager initiateSessionWithScope:scope options:SPTDefaultAuthorizationOption];
-    }
-}
-
-
 @end

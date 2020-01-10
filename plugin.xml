@@ -14,5 +14,6 @@
         </config-file>
         <header-file src="src/ios/SpotifyiOS.h" />
         <source-file src="src/ios/SpotifyiOS.m" />
+        <header-file src="src/ios/SpotifyiOSHeaders.h" />
     </platform>
 </plugin>

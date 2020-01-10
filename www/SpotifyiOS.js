@@ -4,8 +4,8 @@ var PLUGIN_NAME = "SpotifyiOS";
 
 var SpotifyiOS = function() {}
 
-SpotifyiOS.initialize = function(onSuccess, onError, clientID) {
-    exec(onSuccess, onError, PLUGIN_NAME, "initialize", [clientID]);
+SpotifyiOS.initialize = function(onSuccess, onError, options) {
+    exec(onSuccess, onError, PLUGIN_NAME, "initialize", [options]);
 };
 
 
