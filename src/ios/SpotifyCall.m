@@ -8,26 +8,19 @@
 @implementation SpotifyCall
 
 - (void)initialize:(CDVInvokedUrlCommand*)command {
-    [[SpotifyiOS sharedInstance] initialize:command.arguments[0] callbackId:command.callbackId];
-
-    /*CDVPluginResult *result = [CDVPluginResult
-            resultWithStatus: CDVCommandStatus_OK
-                               messageAsString: nil];
-
-    [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];*/
+   return [[SpotifyiOS sharedInstance] initialize:command.arguments[0] callbackId:command.callbackId];
 }
 
 - (void)doConnect:(CDVInvokedUrlCommand*)command {
     return [[SpotifyRemote sharedInstance] initializeAppRemote:command.arguments[0]];
 }
 
-- (void) test:(NSString*)callbackId {
-    NSLog(@"TEST: %@", callbackId);
+- (void) getToken:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *result = [CDVPluginResult
             resultWithStatus: CDVCommandStatus_OK
-                               messageAsString: @"hi there my guy"];
+                               messageAsString:  [[SpotifyiOS sharedInstance] accessToken]];
 
-    return [self.commandDelegate sendPluginResult: result callbackId: callbackId];
+    return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
 }
 
 
