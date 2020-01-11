@@ -8,9 +8,6 @@ static NSString * const SpotifyRedirectURLString = @"soundseek-party://callback"
 static SpotifyiOS *sharedInstance = nil;
 
 @interface SpotifyiOS () <SPTSessionManagerDelegate> {
-    BOOL _initialized;
-    BOOL _isInitializing;
-    BOOL _isRemoteConnected;
     NSDictionary* _options;
     NSString* _callbackId;
 
@@ -21,6 +18,15 @@ static SpotifyiOS *sharedInstance = nil;
 @end
 
 @implementation SpotifyiOS
+
+- (instancetype)initWithCommandDelegate:(id <CDVCommandDelegate>)commandDelegate {
+    self.commandDelegate = commandDelegate;
+    return self;
+}
+
+- (void)setCallbackId:(NSString *) callbackId {
+    self.eventCallbackId = callbackId;
+}
 
 - (NSString*) accessToken{
     return _sessionManager.session.accessToken;
@@ -40,15 +46,8 @@ static SpotifyiOS *sharedInstance = nil;
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
-    NSLog(@"application from spotifyiOS");
     BOOL returnVal = NO;
-    NSLog(@"init session manager:");
-    NSLog(@"%@", _options[@"clientID"]);
-    NSLog(@"%@", _options[@"redirectURL"]);
-    NSLog(@"%@", _options[@"tokenSwapURL"]);
-    NSLog(@"%@", _options[@"tokenRefreshURL"]);
     if(_sessionManager != nil){
-        NSLog(@"Setting application openURL and options on session manager");
         NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:TRUE];
         NSURLQueryItem * errorDescription = [[[urlComponents queryItems] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", SPTAppRemoteErrorDescriptionKey]] firstObject];
         
@@ -61,18 +60,13 @@ static SpotifyiOS *sharedInstance = nil;
         NSLog(@"sessionManager is nil");
     }
     
-    if(returnVal){
-//        [self resolveCompletions:_sessionManagerCallbacks result:nil];
-    }
     return returnVal;
 }
 
 - (void)sessionManager:(SPTSessionManager *)manager didInitiateSession:(SPTSession *)session
 {
     NSLog(@"Auth token: %@", session.accessToken);
-    if(_callbackId) {
-        NSLog(@"callbackID: %@", _callbackId);
-    }
+    [self emit:session.accessToken withError:nil];
 }
 
 - (void)sessionManager:(SPTSessionManager *)manager didFailWithError:(NSError *)error
@@ -89,19 +83,28 @@ static SpotifyiOS *sharedInstance = nil;
     
     NSLog(@"%@", callbackId);
     _callbackId = callbackId;
-        
-    if(_isInitializing){
+    _options = options;
+    [self initializeSessionManager:options];
+}
+
+- (void)emit:(NSString*)message withError:(NSString*)err {
+    
+    if (self.eventCallbackId == nil) {
+        NSLog(@"callbackid is nil");
         return;
     }
     
-    if(_initialized && [_sessionManager session]!= nil && [_sessionManager session].isExpired == NO)
-    {
-        return;
+    NSLog(@"%@", [[SpotifyiOS sharedInstance] eventCallbackId]);
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
+    messageAsString: message];
+    
+    if(!err) {
+        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+        messageAsString: message];
     }
-    _isInitializing = YES;
-
-    _options = options;
-    [self initializeSessionManager:options];
+        
+    [self.commandDelegate sendPluginResult: result
+                                callbackId: self.eventCallbackId];
 }
 
 

@@ -10,6 +10,11 @@ static SpotifyCall *sharedInstance = nil;
 
 @implementation SpotifyCall
 
+- (void) pluginInitialize {
+    __weak id <CDVCommandDelegate> _commandDelegate = self.commandDelegate;
+    self.spotifyiOS = [[SpotifyiOS sharedInstance] initWithCommandDelegate:_commandDelegate];
+}
+
 + (SpotifyCall *)sharedInstance {
     static dispatch_once_t predicate;
     dispatch_once(&predicate,^{
@@ -21,6 +26,7 @@ static SpotifyCall *sharedInstance = nil;
 
 - (void)initialize:(CDVInvokedUrlCommand*)command {
     NSLog(@"%@", command.callbackId);
+    [[SpotifyiOS sharedInstance] setCallbackId:command.callbackId];
     [[SpotifyiOS sharedInstance] initialize:command.arguments[0] callbackId:command.callbackId];
 }
 
