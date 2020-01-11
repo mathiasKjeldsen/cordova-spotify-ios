@@ -53,6 +53,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
     NSLog(@"App Remote disconnected");
+    _isConnected = NO;
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote {
@@ -70,6 +71,8 @@ static SpotifyRemote *sharedInstance = nil;
             [self pause];
         } else if([_connectCallbackMessage  isEqual: @"resume"]) {
             [self resume];
+        } else if([_connectCallbackMessage  isEqual: @"getPlayerState"]) {
+            [self getPlayerState];
         }
     }
 }
@@ -119,6 +122,29 @@ static SpotifyRemote *sharedInstance = nil;
     }
 }
 
+- (void) getPlayerState {
+    if(_isConnected) {
+        [_appRemote.playerAPI getPlayerState:^(id  _Nullable result, NSError * _Nullable error) {
+             if(error) {
+                NSLog(@"getPlayerState err: %@", error.description);
+             } else {
+                 NSLog(@"%@", [SpotifyConvert SPTAppRemotePlayerState:result]);
+                 if (self.eventCallbackId == nil) {
+                     NSLog(@"callbackid is nil");
+                     return;
+                 }
+                 CDVPluginResult *plResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+                     messageAsDictionary:[SpotifyConvert SPTAppRemotePlayerState:result]];
+                 
+                 [self.commandDelegate sendPluginResult: plResult
+                                             callbackId: self.eventCallbackId];
+             }
+        }];
+    } else {
+        [self connect:@"getPlayerState"];
+    }
+}
+
 - (void) connect:(NSString*)callback{
     _connectCallbackMessage = callback;
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
@@ -137,7 +163,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
-    NSLog(@"%@", playerState.track.name);
+    NSLog( @"%@", [SpotifyConvert SPTAppRemotePlayerState:playerState] );
 }
 
 - (void)emit:(NSString*)message withError:(NSString*)err {
