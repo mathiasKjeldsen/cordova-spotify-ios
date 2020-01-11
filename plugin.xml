@@ -17,5 +17,7 @@
         <header-file src="src/ios/SpotifyiOSHeaders.h" />
         <header-file src="src/ios/SpotifyCall.h" />
         <source-file src="src/ios/SpotifyCall.m" />
+        <header-file src="src/ios/SpotifyRemote.h" />
+        <source-file src="src/ios/SpotifyRemote.m" />
     </platform>
 </plugin>
