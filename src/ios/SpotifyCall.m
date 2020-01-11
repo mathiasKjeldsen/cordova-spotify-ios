@@ -1,24 +1,37 @@
 #import "SpotifyCall.h"
 #import "SpotifyiOSHeaders.h"
 
-@interface SpotifyCall () 
+static SpotifyCall *sharedInstance = nil;
+
+
+@interface SpotifyCall ()
 
 @end
 
 @implementation SpotifyCall
 
++ (SpotifyCall *)sharedInstance {
+    static dispatch_once_t predicate;
+    dispatch_once(&predicate,^{
+        sharedInstance = [[SpotifyCall alloc] init];
+    });
+    return sharedInstance;
+}
+
+
 - (void)initialize:(CDVInvokedUrlCommand*)command {
-   return [[SpotifyiOS sharedInstance] initialize:command.arguments[0] callbackId:command.callbackId];
+    NSLog(@"%@", command.callbackId);
+    [[SpotifyiOS sharedInstance] initialize:command.arguments[0] callbackId:command.callbackId];
 }
 
 - (void)doConnect:(CDVInvokedUrlCommand*)command {
-    return [[SpotifyRemote sharedInstance] initializeAppRemote:command.arguments[0]];
+    return [[SpotifyRemote sharedInstance] initializeAppRemote:command.arguments[0] playURI:command.arguments[1]];
 }
 
 - (void) getToken:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *result = [CDVPluginResult
             resultWithStatus: CDVCommandStatus_OK
-                               messageAsString:  [[SpotifyiOS sharedInstance] accessToken]];
+                               messageAsString: [[SpotifyiOS sharedInstance] accessToken]];
 
     return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
 }

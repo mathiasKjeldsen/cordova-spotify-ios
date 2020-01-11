@@ -27,14 +27,14 @@ static SpotifyRemote *sharedInstance = nil;
     return sharedInstance;
 }
 
-- (void)initializeAppRemote:(NSString*)accessToken{
+- (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri{
     NSLog(@"init app remote: %@", accessToken);
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
 
     _appRemote.connectionParameters.accessToken = accessToken != nil ? accessToken : [[SpotifyiOS sharedInstance] accessToken];
 
     _appRemote.delegate = self;
-    [_appRemote connect];
+    [_appRemote authorizeAndPlayURI:uri];
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
@@ -47,6 +47,8 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)connectedRemote {
     NSLog(@"App Remote Connection Initiated");
+    _appRemote.playerAPI.delegate = self;
+    //[self playUri:@"spotify:track:22nyEAEM29tcBRhukR089b"];
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didFailConnectionAttemptWithError:(nullable NSError *)error {
@@ -55,7 +57,12 @@ static SpotifyRemote *sharedInstance = nil;
 
 
 - (void)playUri:(NSString*)uri{
-    // [_appRemote.playerAPI play:uri];
+    if(_appRemote && _appRemote.playerAPI != nil) {
+        [_appRemote.playerAPI play:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
+            NSLog(@"error????????");
+        }];
+    }
+     
 }
 
 

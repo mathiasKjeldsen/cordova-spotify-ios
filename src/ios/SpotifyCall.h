@@ -5,6 +5,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SpotifyCall : CDVPlugin
 
++(SpotifyCall*)sharedInstance;
+
 -(void)initialize:(CDVInvokedUrlCommand*)command;
 
 -(void)doConnect:(CDVInvokedUrlCommand*)command;

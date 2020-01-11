@@ -1,4 +1,6 @@
 #import "SpotifyiOS.h"
+#import <Cordova/CDVPluginResult.h>
+#import "SpotifyiOSHeaders.h"
 
 static NSString * const SpotifyClientID = @"715e9350d6e54e6684ebd84775d91538";
 static NSString * const SpotifyRedirectURLString = @"soundseek-party://callback";
@@ -67,11 +69,10 @@ static SpotifyiOS *sharedInstance = nil;
 
 - (void)sessionManager:(SPTSessionManager *)manager didInitiateSession:(SPTSession *)session
 {
-    NSLog(@"auth success %@", session.accessToken);
+    NSLog(@"Auth token: %@", session.accessToken);
     if(_callbackId) {
-        NSLog(@"callbackID found!!!!!! %@", _callbackId);
+        NSLog(@"callbackID: %@", _callbackId);
     }
-    
 }
 
 - (void)sessionManager:(SPTSessionManager *)manager didFailWithError:(NSError *)error
@@ -113,16 +114,12 @@ static SpotifyiOS *sharedInstance = nil;
     NSLog(@"%@", options[@"tokenRefreshURL"]);
 
     _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
-        _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
-        _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
+    _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
+    _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
     
     SPTScope scope = SPTAppRemoteControlScope | SPTUserFollowReadScope;
     
     _sessionManager = [SPTSessionManager sessionManagerWithConfiguration:_apiConfiguration delegate:self];
-
-    if(_sessionManager != nil && sharedInstance) {
-        NSLog(@"session manager & sharedinstance is alive");
-    }
     
     if (@available(iOS 11, *)) {
         [_sessionManager

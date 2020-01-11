@@ -4,7 +4,7 @@
 
 +(instancetype)sharedInstance;
 
--(void)initializeAppRemote:(NSString*)accessToken;
+-(void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
 
 -(void)playUri:(NSString*)uri;
 

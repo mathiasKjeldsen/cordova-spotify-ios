@@ -1,5 +1,6 @@
 #define SpotifyiOS_h
 #import <SpotifyiOS/SpotifyiOS.h>
+#import <Cordova/CDVPlugin.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
