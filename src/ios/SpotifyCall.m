@@ -13,6 +13,8 @@ static SpotifyCall *sharedInstance = nil;
 - (void) pluginInitialize {
     __weak id <CDVCommandDelegate> _commandDelegate = self.commandDelegate;
     self.spotifyiOS = [[SpotifyiOS sharedInstance] initWithCommandDelegate:_commandDelegate];
+    self.spotifyRemote = [[SpotifyRemote sharedInstance] initWithCommandDelegate:_commandDelegate];
+
 }
 
 + (SpotifyCall *)sharedInstance {
@@ -25,9 +27,8 @@ static SpotifyCall *sharedInstance = nil;
 
 
 - (void)initialize:(CDVInvokedUrlCommand*)command {
-    NSLog(@"%@", command.callbackId);
     [[SpotifyiOS sharedInstance] setCallbackId:command.callbackId];
-    [[SpotifyiOS sharedInstance] initialize:command.arguments[0] callbackId:command.callbackId];
+    [[SpotifyiOS sharedInstance] initialize:command.arguments[0]];
 }
 
 - (void)doConnect:(CDVInvokedUrlCommand*)command {
@@ -40,6 +41,11 @@ static SpotifyCall *sharedInstance = nil;
                                messageAsString: [[SpotifyiOS sharedInstance] accessToken]];
 
     return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
+}
+
+- (void) playURI:(CDVInvokedUrlCommand*)command {
+    [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
+    return [[SpotifyRemote sharedInstance] playUri:command.arguments[0]];
 }
 
 

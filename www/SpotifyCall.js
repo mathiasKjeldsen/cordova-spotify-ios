@@ -14,4 +14,8 @@ SpotifyCall.getToken = function(onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "getToken", []);
 };
 
+SpotifyCall.playURI = function(onSuccess, onError, playuri) {
+    exec(onSuccess, onError, "SpotifyCall", "playURI", [playuri]);
+};
+
 module.exports = SpotifyCall;

@@ -9,8 +9,6 @@ static SpotifyiOS *sharedInstance = nil;
 
 @interface SpotifyiOS () <SPTSessionManagerDelegate> {
     NSDictionary* _options;
-    NSString* _callbackId;
-
     SPTConfiguration* _apiConfiguration;
     SPTSessionManager* _sessionManager;
 }
@@ -51,7 +49,6 @@ static SpotifyiOS *sharedInstance = nil;
         NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:TRUE];
         NSURLQueryItem * errorDescription = [[[urlComponents queryItems] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", SPTAppRemoteErrorDescriptionKey]] firstObject];
         
-        // If there was an error we should reject our pending Promise
         if(errorDescription){
             returnVal = NO;
         }
@@ -79,10 +76,7 @@ static SpotifyiOS *sharedInstance = nil;
     NSLog(@"session renewed %@", session.description);
 }
 
-- (void) initialize:(NSDictionary*)options callbackId:(NSString*)callbackId{
-    
-    NSLog(@"%@", callbackId);
-    _callbackId = callbackId;
+- (void) initialize:(NSDictionary*)options{
     _options = options;
     [self initializeSessionManager:options];
 }
@@ -109,13 +103,6 @@ static SpotifyiOS *sharedInstance = nil;
 
 
 - (void)initializeSessionManager:(NSDictionary*)options{
-        
-    NSLog(@"init session manager:");
-    NSLog(@"%@", options[@"clientID"]);
-    NSLog(@"%@", options[@"redirectURL"]);
-    NSLog(@"%@", options[@"tokenSwapURL"]);
-    NSLog(@"%@", options[@"tokenRefreshURL"]);
-
     _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
     _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
     _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];

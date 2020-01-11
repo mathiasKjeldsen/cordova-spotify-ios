@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 +(SpotifyiOS*)sharedInstance;
 
--(void)initialize:(NSDictionary*)options callbackId:(NSString*)callbackId;
+-(void)initialize:(NSDictionary*)options;
 
 -(SPTConfiguration*) configuration;
 -(NSString*) accessToken;

@@ -14,10 +14,20 @@ static SpotifyRemote *sharedInstance = nil;
     
     SPTAppRemote *_appRemote;
 }
-- (void)initializeAppRemote:(NSString*)accessToken;
+- (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
 @end
 
 @implementation SpotifyRemote
+
+- (instancetype)initWithCommandDelegate:(id <CDVCommandDelegate>)commandDelegate {
+    self.commandDelegate = commandDelegate;
+    return self;
+}
+
+- (void)setCallbackId:(NSString *) callbackId {
+    self.eventCallbackId = callbackId;
+}
+
 
 + (SpotifyRemote *)sharedInstance {
     static dispatch_once_t predicate;
@@ -57,17 +67,39 @@ static SpotifyRemote *sharedInstance = nil;
 
 
 - (void)playUri:(NSString*)uri{
-    if(_appRemote && _appRemote.playerAPI != nil) {
-        [_appRemote.playerAPI play:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
-            NSLog(@"error????????");
-        }];
-    }
-     
+    [_appRemote.playerAPI play:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
+        NSLog(@"playURI error");
+        if(error) {
+            [self emit:[NSString stringWithFormat:@"%@,%s", uri, "playbackerrorfam"] withError:@"YES"];
+        } else {
+            [self emit:[NSString stringWithFormat:@"%@,%s", uri, "Started playing"] withError:nil];
+        }
+    }];
 }
 
 
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
    // <#code#>
+}
+
+- (void)emit:(NSString*)message withError:(NSString*)err {
+    
+    if (self.eventCallbackId == nil) {
+        NSLog(@"callbackid is nil");
+        return;
+    }
+    
+    NSLog(@"%@", [[SpotifyRemote sharedInstance] eventCallbackId]);
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
+    messageAsString: message];
+    
+    if(!err) {
+        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+        messageAsString: message];
+    }
+        
+    [self.commandDelegate sendPluginResult: result
+                                callbackId: self.eventCallbackId];
 }
 
 @end

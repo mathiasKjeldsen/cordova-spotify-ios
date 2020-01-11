@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SpotifyCall : CDVPlugin
 
 @property(nonatomic) SpotifyiOS *spotifyiOS;
+@property(nonatomic) SpotifyRemote *spotifyRemote;
 
 +(SpotifyCall*)sharedInstance;
 
@@ -14,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)doConnect:(CDVInvokedUrlCommand*)command;
 
 -(void)getToken:(CDVInvokedUrlCommand*)command;
+
+-(void)playURI:(CDVInvokedUrlCommand*)command;
 
 @end
 
