@@ -10,7 +10,9 @@ static SpotifyRemote *sharedInstance = nil;
 @interface SpotifyRemote () <SPTAppRemoteDelegate,SPTAppRemotePlayerStateDelegate>
 {
     BOOL _isConnected;
-    SPTAppRemote *_appRemote;
+    NSString* _connectCallbackMessage;
+    NSString* _uri;
+    SPTAppRemote* _appRemote;
 }
 - (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
 @end
@@ -43,8 +45,9 @@ static SpotifyRemote *sharedInstance = nil;
 
     _appRemote.delegate = self;
     BOOL canPlay = [_appRemote authorizeAndPlayURI:uri];
+    NSLog(@"canPlay %d", canPlay);
     if(canPlay) {
-        [self connect];
+        [self connect:nil];
     }
 }
 
@@ -60,10 +63,17 @@ static SpotifyRemote *sharedInstance = nil;
     NSLog(@"App Remote Connection Initiated");
     [self subToPlayerState];
     _isConnected = YES;
+    if(_connectCallbackMessage) {
+        if([_connectCallbackMessage  isEqual: @"playUri"]) {
+            [self playUri:_uri];
+        } else if([_connectCallbackMessage  isEqual: @"pause"]) {
+            [self pause];
+        }
+    }
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didFailConnectionAttemptWithError:(nullable NSError *)error {
-    //<#code#>
+    NSLog(@"didFailConnectionAttemptWithError %@", error.description);
 }
 
 
@@ -79,11 +89,8 @@ static SpotifyRemote *sharedInstance = nil;
             }
         }];
     } else {
-        [self connect];
+        [self connect:@"playUri"];
     }
-    
-    
-  
 }
 
 - (void) pause {
@@ -91,10 +98,14 @@ static SpotifyRemote *sharedInstance = nil;
         [_appRemote.playerAPI pause:^(id  _Nullable result, NSError * _Nullable error) {
             NSLog(@"err");
         }];
+    } else {
+        [self connect:@"pause"];
     }
 }
 
-- (void) connect{
+- (void) connect:(NSString*)callback{
+    NSLog(@"connecc??");
+    _connectCallbackMessage = callback;
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
     _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
     _appRemote.delegate = self;
