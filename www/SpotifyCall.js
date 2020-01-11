@@ -2,6 +2,19 @@ var exec = require('cordova/exec');
 
 var SpotifyCall = function() {}
 
+/**
+ * Initialize a session in the Spotify App
+ * 
+ * @param {function} onSuccess Function to call when a session has been initialized. Authorization token is returned.
+ * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
+ * 
+ *  @param {object} options Options to use for initialization:
+ * * clientId: string
+ * * redirectURL: string
+ * * tokenExhangeURL: string
+ * * tokenRefreshURL: string
+ */
+
 SpotifyCall.initialize = function(onSuccess, onError, options) {
     exec(onSuccess, onError, "SpotifyCall", "initialize", [options]);
 };
@@ -20,6 +33,10 @@ SpotifyCall.playURI = function(onSuccess, onError, playuri) {
 
 SpotifyCall.pause = function(onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "pause", []);
+};
+
+SpotifyCall.resume = function(onSuccess, onError) {
+    exec(onSuccess, onError, "SpotifyCall", "resume", []);
 };
 
 module.exports = SpotifyCall;

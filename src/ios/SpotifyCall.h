@@ -11,14 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 +(SpotifyCall*)sharedInstance;
 
 -(void)initialize:(CDVInvokedUrlCommand*)command;
-
 -(void)doConnect:(CDVInvokedUrlCommand*)command;
-
 -(void)getToken:(CDVInvokedUrlCommand*)command;
-
 -(void)playURI:(CDVInvokedUrlCommand*)command;
-
 -(void)pause:(CDVInvokedUrlCommand*)command;
+-(void)resume:(CDVInvokedUrlCommand*)command;
 
 @end
 

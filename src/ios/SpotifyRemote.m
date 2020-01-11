@@ -28,6 +28,10 @@ static SpotifyRemote *sharedInstance = nil;
     self.eventCallbackId = callbackId;
 }
 
+- (void)setEmitEventCallbackId:(NSString *) callbackId {
+    self.emitEventCallbackId = callbackId;
+}
+
 
 + (SpotifyRemote *)sharedInstance {
     static dispatch_once_t predicate;
@@ -38,14 +42,12 @@ static SpotifyRemote *sharedInstance = nil;
 }
 
 - (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri{
-    NSLog(@"init app remote: %@", accessToken);
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
 
     _appRemote.connectionParameters.accessToken = accessToken != nil ? accessToken : [[SpotifyiOS sharedInstance] accessToken];
 
     _appRemote.delegate = self;
     BOOL canPlay = [_appRemote authorizeAndPlayURI:uri];
-    NSLog(@"canPlay %d", canPlay);
     if(canPlay) {
         [self connect:nil];
     }
@@ -61,13 +63,14 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)connectedRemote {
     NSLog(@"App Remote Connection Initiated");
-    [self subToPlayerState];
     _isConnected = YES;
     if(_connectCallbackMessage) {
         if([_connectCallbackMessage  isEqual: @"playUri"]) {
             [self playUri:_uri];
         } else if([_connectCallbackMessage  isEqual: @"pause"]) {
             [self pause];
+        } else if([_connectCallbackMessage  isEqual: @"resume"]) {
+            [self resume];
         }
     }
 }
@@ -96,15 +99,24 @@ static SpotifyRemote *sharedInstance = nil;
 - (void) pause {
     if(_isConnected) {
         [_appRemote.playerAPI pause:^(id  _Nullable result, NSError * _Nullable error) {
-            NSLog(@"err");
+            NSLog(@"pause err: %@", error.description);
         }];
     } else {
         [self connect:@"pause"];
     }
 }
 
+- (void) resume {
+    if(_isConnected) {
+        [_appRemote.playerAPI resume:^(id  _Nullable result, NSError * _Nullable error) {
+            NSLog(@"resume err: %@", error.description);
+        }];
+    } else {
+        [self connect:@"resume"];
+    }
+}
+
 - (void) connect:(NSString*)callback{
-    NSLog(@"connecc??");
     _connectCallbackMessage = callback;
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
     _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
@@ -122,7 +134,18 @@ static SpotifyRemote *sharedInstance = nil;
 
 
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
-    NSLog(@"Track name: %@", playerState.track.name);
+    
+    if (self.emitEventCallbackId == nil) {
+        NSLog(@"emitEventCallbackId is nil");
+        return;
+    }
+    
+    NSLog(@"%@", [[SpotifyRemote sharedInstance] emitEventCallbackId]);
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+    messageAsString:@""];
+        
+    [self.commandDelegate sendPluginResult: result
+                                callbackId: self.emitEventCallbackId];
 }
 
 - (void)emit:(NSString*)message withError:(NSString*)err {

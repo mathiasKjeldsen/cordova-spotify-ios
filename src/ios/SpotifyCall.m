@@ -53,5 +53,10 @@ static SpotifyCall *sharedInstance = nil;
     return [[SpotifyRemote sharedInstance] pause];
 }
 
+- (void) resume:(CDVInvokedUrlCommand*)command {
+    [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
+    return [[SpotifyRemote sharedInstance] resume];
+}
+
 
 @end
