@@ -7,6 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)initialize:(CDVInvokedUrlCommand*)command;
 
+-(void)test:(NSString*)callbackId;
+
 @end
 
 NS_ASSUME_NONNULL_END

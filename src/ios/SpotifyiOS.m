@@ -1,19 +1,21 @@
 #import "SpotifyiOS.h"
+#import "SpotifyCall.h"
 
 static NSString * const SpotifyClientID = @"715e9350d6e54e6684ebd84775d91538";
 static NSString * const SpotifyRedirectURLString = @"soundseek-party://callback";
 
 static SpotifyiOS *sharedInstance = nil;
 
-
 @interface SpotifyiOS () <SPTSessionManagerDelegate> {
     BOOL _initialized;
     BOOL _isInitializing;
     BOOL _isRemoteConnected;
     NSDictionary* _options;
+    NSString* _callbackId;
 
     SPTConfiguration* _apiConfiguration;
     SPTSessionManager* _sessionManager;
+    SpotifyCall *_spotifyCall;
 }
 
 @end
@@ -68,6 +70,12 @@ static SpotifyiOS *sharedInstance = nil;
 - (void)sessionManager:(SPTSessionManager *)manager didInitiateSession:(SPTSession *)session
 {
     NSLog(@"auth success %@", session.description);
+    if(_callbackId) {
+        NSLog(@"callbackID found!!!!!!");
+        _spotifyCall = [[SpotifyCall alloc] init];
+        [_spotifyCall test:_callbackId];
+    }
+    
 }
 
 - (void)sessionManager:(SPTSessionManager *)manager didFailWithError:(NSError *)error
@@ -80,8 +88,10 @@ static SpotifyiOS *sharedInstance = nil;
     NSLog(@"session renewed %@", session.description);
 }
 
-- (void) initialize:(NSDictionary*)options{
-
+- (void) initialize:(NSDictionary*)options callbackId:(NSString*)callbackId{
+    
+    NSLog(@"%@", callbackId);
+    _callbackId = callbackId;
         
     if(_isInitializing){
         return;
