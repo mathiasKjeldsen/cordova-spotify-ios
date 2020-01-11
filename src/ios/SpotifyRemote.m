@@ -28,7 +28,7 @@ static SpotifyRemote *sharedInstance = nil;
 }
 
 - (void)initializeAppRemote:(NSString*)accessToken{
-
+    NSLog(@"init app remote: %@", accessToken);
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
 
     _appRemote.connectionParameters.accessToken = accessToken != nil ? accessToken : [[SpotifyiOS sharedInstance] accessToken];

@@ -7,6 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)initialize:(CDVInvokedUrlCommand*)command;
 
+-(void)doConnect:(CDVInvokedUrlCommand*)command;
+
 -(void)getToken:(CDVInvokedUrlCommand*)command;
 
 @end
