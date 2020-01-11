@@ -48,10 +48,7 @@ static SpotifyRemote *sharedInstance = nil;
     _appRemote.connectionParameters.accessToken = accessToken != nil ? accessToken : [[SpotifyiOS sharedInstance] accessToken];
 
     _appRemote.delegate = self;
-    BOOL canPlay = [_appRemote authorizeAndPlayURI:uri];
-    if(canPlay) {
-        [self connect:nil];
-    }
+    [_appRemote authorizeAndPlayURI:uri];
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
@@ -101,7 +98,9 @@ static SpotifyRemote *sharedInstance = nil;
 - (void) pause {
     if(_isConnected) {
         [_appRemote.playerAPI pause:^(id  _Nullable result, NSError * _Nullable error) {
-            NSLog(@"pause err: %@", error.description);
+            if(error) {
+                NSLog(@"pause err: %@", error.description);
+            }
         }];
     } else {
         [self connect:@"pause"];
@@ -111,7 +110,9 @@ static SpotifyRemote *sharedInstance = nil;
 - (void) resume {
     if(_isConnected) {
         [_appRemote.playerAPI resume:^(id  _Nullable result, NSError * _Nullable error) {
-            NSLog(@"resume err: %@", error.description);
+             if(error) {
+                NSLog(@"resume err: %@", error.description);
+            }
         }];
     } else {
         [self connect:@"resume"];
