@@ -65,6 +65,7 @@ static SpotifyRemote *sharedInstance = nil;
 - (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)connectedRemote {
     NSLog(@"App Remote Connection Initiated");
     _isConnected = YES;
+    [self subToPlayerState];
     if(_connectCallbackMessage) {
         if([_connectCallbackMessage  isEqual: @"playUri"]) {
             [self playUri:_uri];
@@ -135,15 +136,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
-    
-    if (self.emitEventCallbackId != nil) {
-        NSLog(@"%@", [[SpotifyRemote sharedInstance] emitEventCallbackId]);
-        CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-        messageAsDictionary:[SpotifyConvert SPTAppRemotePlayerState:playerState]];
-        
-        [self.commandDelegate sendPluginResult: result
-                                callbackId: self.emitEventCallbackId];
-    }
+    NSLog(@"%@", playerState.track.name);
 }
 
 - (void)emit:(NSString*)message withError:(NSString*)err {

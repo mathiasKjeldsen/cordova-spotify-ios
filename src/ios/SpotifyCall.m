@@ -58,9 +58,4 @@ static SpotifyCall *sharedInstance = nil;
     return [[SpotifyRemote sharedInstance] resume];
 }
 
-- (void) getEventCallbacks:(CDVInvokedUrlCommand*)command {
-    [[SpotifyRemote sharedInstance] setEmitEventCallbackId:command.callbackId];
-}
-
-
 @end
