@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)playURI:(CDVInvokedUrlCommand*)command;
 -(void)pause:(CDVInvokedUrlCommand*)command;
 -(void)resume:(CDVInvokedUrlCommand*)command;
-
+-(void)getEventCallbacks:(CDVInvokedUrlCommand*)command;
 @end
 
 NS_ASSUME_NONNULL_END

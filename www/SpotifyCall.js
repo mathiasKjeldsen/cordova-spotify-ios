@@ -39,4 +39,8 @@ SpotifyCall.resume = function(onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "resume", []);
 };
 
+SpotifyCall.getEventCallbacks = function(onSuccess, onError) {
+    exec(onSuccess, onError, "SpotifyCall", "getEventCallbacks", []);
+};
+
 module.exports = SpotifyCall;

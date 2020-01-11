@@ -62,4 +62,24 @@
     };
 }
 
++(id)SPTAppRemoteArtist:(NSObject<SPTAppRemoteArtist>*) artist{
+    if(artist == nil){
+        return [NSNull null];
+    }
+    return @{
+             @"name":artist.name,
+             @"uri":artist.URI
+    };
+}
+
++(id)SPTAppRemoteAlbum:(NSObject<SPTAppRemoteAlbum>*) album{
+    if(album == nil){
+        return [NSNull null];
+    }
+    return @{
+             @"name":album.name,
+             @"uri":album.URI
+    };
+}
+
 @end

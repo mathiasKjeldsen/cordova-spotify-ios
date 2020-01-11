@@ -1,6 +1,7 @@
 #import "SpotifyRemote.h"
 #import <SpotifyiOS/SpotifyiOS.h>
 #import "SpotifyiOSHeaders.h"
+#import "SpotifyConvert.h"
 
 #define SPOTIFY_API_BASE_URL @"https://api.spotify.com/"
 #define SPOTIFY_API_URL(endpoint) [NSURL URLWithString:NSString_concat(SPOTIFY_API_BASE_URL, endpoint)]
@@ -135,17 +136,14 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
     
-    if (self.emitEventCallbackId == nil) {
-        NSLog(@"emitEventCallbackId is nil");
-        return;
-    }
-    
-    NSLog(@"%@", [[SpotifyRemote sharedInstance] emitEventCallbackId]);
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-    messageAsString:@""];
+    if (self.emitEventCallbackId != nil) {
+        NSLog(@"%@", [[SpotifyRemote sharedInstance] emitEventCallbackId]);
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+        messageAsDictionary:[SpotifyConvert SPTAppRemotePlayerState:playerState]];
         
-    [self.commandDelegate sendPluginResult: result
+        [self.commandDelegate sendPluginResult: result
                                 callbackId: self.emitEventCallbackId];
+    }
 }
 
 - (void)emit:(NSString*)message withError:(NSString*)err {
