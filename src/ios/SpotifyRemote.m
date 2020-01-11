@@ -9,9 +9,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 @interface SpotifyRemote () <SPTAppRemoteDelegate,SPTAppRemotePlayerStateDelegate>
 {
-    BOOL _isConnecting;
-    NSString* _accessToken;
-    
+    BOOL _isConnected;
     SPTAppRemote *_appRemote;
 }
 - (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
@@ -44,7 +42,10 @@ static SpotifyRemote *sharedInstance = nil;
     _appRemote.connectionParameters.accessToken = accessToken != nil ? accessToken : [[SpotifyiOS sharedInstance] accessToken];
 
     _appRemote.delegate = self;
-    [_appRemote authorizeAndPlayURI:uri];
+    BOOL canPlay = [_appRemote authorizeAndPlayURI:uri];
+    if(canPlay) {
+        [self connect];
+    }
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
@@ -57,8 +58,8 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)connectedRemote {
     NSLog(@"App Remote Connection Initiated");
-    _appRemote.playerAPI.delegate = self;
-    //[self playUri:@"spotify:track:22nyEAEM29tcBRhukR089b"];
+    [self subToPlayerState];
+    _isConnected = YES;
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didFailConnectionAttemptWithError:(nullable NSError *)error {
@@ -67,19 +68,50 @@ static SpotifyRemote *sharedInstance = nil;
 
 
 - (void)playUri:(NSString*)uri{
-    [_appRemote.playerAPI play:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
-        NSLog(@"playURI error");
-        if(error) {
-            [self emit:[NSString stringWithFormat:@"%@,%s", uri, "playbackerrorfam"] withError:@"YES"];
-        } else {
-            [self emit:[NSString stringWithFormat:@"%@,%s", uri, "Started playing"] withError:nil];
-        }
+    if(_isConnected) {
+        [_appRemote.playerAPI play:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
+            NSLog(@"playURI error %@", error.description);
+            if(error) {
+                NSLog(@"%@", error.description);
+                [self emit:[NSString stringWithFormat:@"%@,%s", uri, "playbackerrorfam"] withError:@"YES"];
+            } else {
+                [self emit:[NSString stringWithFormat:@"%@,%s", uri, "Started playing"] withError:nil];
+            }
+        }];
+    } else {
+        [self connect];
+    }
+    
+    
+  
+}
+
+- (void) pause {
+    if(_isConnected) {
+        [_appRemote.playerAPI pause:^(id  _Nullable result, NSError * _Nullable error) {
+            NSLog(@"err");
+        }];
+    }
+}
+
+- (void) connect{
+    _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
+    _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
+    _appRemote.delegate = self;
+    [_appRemote connect];
+}
+
+- (void) subToPlayerState {
+    _appRemote.playerAPI.delegate = self;
+
+    [_appRemote.playerAPI subscribeToPlayerState:^(id  _Nullable result, NSError * _Nullable error) {
+        NSLog(@"%@", error.description);
     }];
 }
 
 
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
-   // <#code#>
+    NSLog(@"Track name: %@", playerState.track.name);
 }
 
 - (void)emit:(NSString*)message withError:(NSString*)err {

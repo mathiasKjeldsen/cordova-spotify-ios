@@ -14,4 +14,6 @@
 
 -(void)playUri:(NSString*)uri;
 
+-(void)pause;
+
 @end

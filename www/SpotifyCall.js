@@ -18,4 +18,8 @@ SpotifyCall.playURI = function(onSuccess, onError, playuri) {
     exec(onSuccess, onError, "SpotifyCall", "playURI", [playuri]);
 };
 
+SpotifyCall.pause = function(onSuccess, onError) {
+    exec(onSuccess, onError, "SpotifyCall", "pause", []);
+};
+
 module.exports = SpotifyCall;
