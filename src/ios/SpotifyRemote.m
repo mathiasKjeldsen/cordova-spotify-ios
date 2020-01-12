@@ -13,6 +13,7 @@ static SpotifyRemote *sharedInstance = nil;
     BOOL _isConnected;
     NSString* _connectCallbackMessage;
     NSString* _uri;
+    NSInteger* _position;
     SPTAppRemote* _appRemote;
 }
 - (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
@@ -73,6 +74,8 @@ static SpotifyRemote *sharedInstance = nil;
             [self resume];
         } else if([_connectCallbackMessage  isEqual: @"getPlayerState"]) {
             [self getPlayerState];
+        } else if([_connectCallbackMessage  isEqual: @"seek"]) {
+            [self seek:_position];
         }
     }
 }
@@ -94,6 +97,7 @@ static SpotifyRemote *sharedInstance = nil;
             }
         }];
     } else {
+        _uri = uri;
         [self connect:@"playUri"];
     }
 }
@@ -122,13 +126,25 @@ static SpotifyRemote *sharedInstance = nil;
     }
 }
 
+- (void) seek:(NSInteger)position {
+    if(_isConnected) {
+        [_appRemote.playerAPI seekToPosition:position callback:^(id  _Nullable result, NSError * _Nullable error) {
+            if(error) {
+                NSLog(@"seek err: %@", error.description);
+            }
+        }];
+    } else {
+        _position = position;
+        [self connect:@"seek"];
+    }
+}
+
 - (void) getPlayerState {
     if(_isConnected) {
         [_appRemote.playerAPI getPlayerState:^(id  _Nullable result, NSError * _Nullable error) {
              if(error) {
                 NSLog(@"getPlayerState err: %@", error.description);
              } else {
-                 NSLog(@"%@", [SpotifyConvert SPTAppRemotePlayerState:result]);
                  if (self.eventCallbackId == nil) {
                      NSLog(@"callbackid is nil");
                      return;

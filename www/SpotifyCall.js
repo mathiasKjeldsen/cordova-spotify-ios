@@ -39,6 +39,10 @@ SpotifyCall.resume = function(onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "resume", []);
 };
 
+SpotifyCall.seek = function(onSuccess, onError, time) {
+    exec(onSuccess, onError, "SpotifyCall", "seek", [time]);
+};
+
 SpotifyCall.getPlayerState = function(onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "getPlayerState", []);
 };
