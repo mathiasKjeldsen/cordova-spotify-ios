@@ -4,7 +4,7 @@
     <name>SpotifyCall</name>
     <description>Cordova Spotify iOS SDK Plugin</description>
     <js-module src="www/SpotifyCall.js" name="SpotifyCall">
-        <clobbers target="SpotifyCall" />
+        <merges target="cordova.plugins.spotifyCall" />
     </js-module>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
