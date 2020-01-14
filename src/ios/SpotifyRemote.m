@@ -134,19 +134,19 @@ static SpotifyRemote *sharedInstance = nil;
     }
 }
 
-- (void) getPlaylistAndPlay:(NSString*)uri {
+- (void) getPlaylistAndPlay:(NSString*)uri index:(NSInteger)index {
     if(_isConnected) {
         [_appRemote.contentAPI fetchContentItemForURI:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
             if(result) {
                 NSLog( @"%@", [SpotifyConvert SPTAppRemoteContentItem:result] );
                 NSObject<SPTAppRemoteContentItem> *item = result;
                 if(item.playable) {
-                    [self playItemFromIndex:result index:0];
+                    [self playItemFromIndex:result index:index];
                 } else {
                     [self emit:@"The provided playlist can not be played." withError:@"YES"];
                 }
             } else {
-                NSLog(@"%@", error.description);
+                [self emit:error.description withError:@"YES"];
             }
         }];
     } else {
@@ -155,8 +155,8 @@ static SpotifyRemote *sharedInstance = nil;
     }
 }
 
-- (void) playItemFromIndex:(NSObject<SPTAppRemoteContentItem>*)item index:(NSInteger*)index {
-    [_appRemote.playerAPI playItem:item skipToTrackIndex:*index callback:[self logCallbackAndEmit:@"playItemFromIndex"]];
+- (void) playItemFromIndex:(NSObject<SPTAppRemoteContentItem>*)item index:(NSInteger)index {
+    [_appRemote.playerAPI playItem:item skipToTrackIndex:index callback:[self logCallbackAndEmit:@"playItemFromIndex"]];
 }
 
 - (void) getPlayerState {

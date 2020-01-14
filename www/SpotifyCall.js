@@ -72,16 +72,18 @@ SpotifyCall.queueURI = function(onSuccess, onError, playuri) {
 };
 
 /**
- * Function that starts playing a playlist by a URI.
+ * Function that starts playing a playlist at a given index by a URI.
  * If appRemote is not connected - this will happen first.
  *
  * @param {function} onSuccess Function to call when a session has been initialized. Event is returned.
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  * @param {string} playURI URI of the requested playlist.
+ * @param {string} index Index of the desired track in the playlist.
+
  */
 
-SpotifyCall.playPlaylistByURI = function(onSuccess, onError, playuri) {
-    exec(onSuccess, onError, "SpotifyCall", "playPlaylist", [playuri]);
+SpotifyCall.playPlaylistByUriAndIndex = function(onSuccess, onError, playuri, index) {
+    exec(onSuccess, onError, "SpotifyCall", "playPlaylist", [playuri, index]);
 };
 
 /**

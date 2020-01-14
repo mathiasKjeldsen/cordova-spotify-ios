@@ -74,7 +74,7 @@ static SpotifyCall *sharedInstance = nil;
 
 - (void) playPlaylist:(CDVInvokedUrlCommand*)command {
     [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
-    return [[SpotifyRemote sharedInstance] getPlaylistAndPlay:command.arguments[0]];
+    return [[SpotifyRemote sharedInstance] getPlaylistAndPlay:command.arguments[0] index:command.arguments[1]];
 }
 
 @end
