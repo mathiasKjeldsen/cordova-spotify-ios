@@ -31,13 +31,17 @@ static SpotifyCall *sharedInstance = nil;
 }
 
 - (void)doConnect:(CDVInvokedUrlCommand*)command {
+    [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
     return [[SpotifyRemote sharedInstance] initializeAppRemote:command.arguments[0] playURI:command.arguments[1]];
 }
 
 - (void) getToken:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *result = [CDVPluginResult
             resultWithStatus: CDVCommandStatus_OK
-                               messageAsString: [[SpotifyiOS sharedInstance] accessToken]];
+                                   messageAsDictionary:@{
+                                   @"accessToken": [[SpotifyiOS sharedInstance] accessToken]
+                               }];
+
     return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
 }
 

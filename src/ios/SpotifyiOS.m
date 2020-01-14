@@ -88,14 +88,20 @@ static SpotifyiOS *sharedInstance = nil;
         return;
     }
     
-    NSLog(@"%@", [[SpotifyiOS sharedInstance] eventCallbackId]);
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
-    messageAsString: message];
-    
-    if(!err) {
-        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-        messageAsString: message];
+    CDVPluginResult *result;
+    if(err) {
+        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
+        messageAsDictionary:@{
+            @"error": message
+        }];
+    } else {
+        [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+        messageAsDictionary:@{
+            @"success": message
+        }];
     }
+        
+    [result setKeepCallbackAsBool:YES];
         
     [self.commandDelegate sendPluginResult: result
                                 callbackId: self.eventCallbackId];

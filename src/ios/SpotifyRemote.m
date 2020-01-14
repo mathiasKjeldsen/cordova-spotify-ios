@@ -2,7 +2,6 @@
 #import <SpotifyiOS/SpotifyiOS.h>
 #import "SpotifyiOSHeaders.h"
 #import "SpotifyConvert.h"
-
 #define SPOTIFY_API_BASE_URL @"https://api.spotify.com/"
 #define SPOTIFY_API_URL(endpoint) [NSURL URLWithString:NSString_concat(SPOTIFY_API_BASE_URL, endpoint)]
 
@@ -32,11 +31,6 @@ static SpotifyRemote *sharedInstance = nil;
     self.eventCallbackId = callbackId;
 }
 
-- (void)setEmitEventCallbackId:(NSString *) callbackId {
-    self.emitEventCallbackId = callbackId;
-}
-
-
 + (SpotifyRemote *)sharedInstance {
     static dispatch_once_t predicate;
     dispatch_once(&predicate,^{
@@ -51,7 +45,10 @@ static SpotifyRemote *sharedInstance = nil;
     _appRemote.connectionParameters.accessToken = accessToken != nil ? accessToken : [[SpotifyiOS sharedInstance] accessToken];
 
     _appRemote.delegate = self;
-    [_appRemote authorizeAndPlayURI:uri];
+    BOOL spotifyInstalled = [_appRemote authorizeAndPlayURI:uri];
+    if(!spotifyInstalled) {
+        [self emit:@"Spotify is not installed" withError:@"YES"];
+    }
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
@@ -209,14 +206,19 @@ static SpotifyRemote *sharedInstance = nil;
         return;
     }
     
-    NSLog(@"%@", [[SpotifyRemote sharedInstance] eventCallbackId]);
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
-    messageAsString: message];
-    
-    if(!err) {
-        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-        messageAsString: message];
+    CDVPluginResult *result;
+    if(err) {
+        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
+        messageAsDictionary:@{
+            @"error": message
+        }];
+    } else {
+        [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+        messageAsDictionary:@{
+            @"success": message
+        }];
     }
+        
     [result setKeepCallbackAsBool:YES];
         
     [self.commandDelegate sendPluginResult: result
