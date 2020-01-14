@@ -65,6 +65,8 @@ static SpotifyRemote *sharedInstance = nil;
     NSLog(@"App Remote Connection Initiated");
     _isConnected = YES;
     [self subToPlayerState];
+    [_appRemote.playerAPI setRepeatMode:1 callback:[self logCallbackAndEmit:@"setRepeatMode"]];
+    [_appRemote.playerAPI setShuffle:NO callback:[self logCallbackAndEmit:@"setShuffle"]];
     if(_connectCallbackMessage) {
         if([_connectCallbackMessage  isEqual: @"playUri"]) {
             [self playUri:_uri];
@@ -75,7 +77,7 @@ static SpotifyRemote *sharedInstance = nil;
         } else if([_connectCallbackMessage  isEqual: @"getPlayerState"]) {
             [self getPlayerState];
         } else if([_connectCallbackMessage  isEqual: @"seek"]) {
-            [self seek:_position];
+            [self seek:*(_position)];
         } else if([_connectCallbackMessage  isEqual: @"queueUri"]) {
             [self queueUri:_uri];
         }
@@ -89,14 +91,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)playUri:(NSString*)uri{
     if(_isConnected) {
-        [_appRemote.playerAPI play:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
-            if(error) {
-                NSLog(@"%@", error.description);
-                [self emit:[NSString stringWithFormat:@"%@,%s", uri, "playbackerrorfam"] withError:@"YES"];
-            } else {
-                [self emit:[NSString stringWithFormat:@"%@,%s", uri, "Started playing"] withError:nil];
-            }
-        }];
+        [_appRemote.playerAPI play:uri callback:[self logCallbackAndEmit:@"playUri"]];
     } else {
         _uri = uri;
         [self connect:@"playUri"];
@@ -105,14 +100,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)queueUri:(NSString*)uri{
     if(_isConnected) {
-        [_appRemote.playerAPI enqueueTrackUri:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
-            if(error) {
-                NSLog(@"%@", error.description);
-                [self emit:[NSString stringWithFormat:@"%@,%s", uri, "queue uri track error fam"] withError:@"YES"];
-            } else {
-                [self emit:[NSString stringWithFormat:@"%@,%s", uri, "Started playing"] withError:nil];
-            }
-        }];
+        [_appRemote.playerAPI enqueueTrackUri:uri callback:[self logCallbackAndEmit:@"queueUri"]];
     } else {
         _uri = uri;
         [self connect:@"queueUri"];
@@ -121,11 +109,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void) pause {
     if(_isConnected) {
-        [_appRemote.playerAPI pause:^(id  _Nullable result, NSError * _Nullable error) {
-            if(error) {
-                NSLog(@"pause err: %@", error.description);
-            }
-        }];
+        [_appRemote.playerAPI pause:[self logCallbackAndEmit:@"pause"]];
     } else {
         [self connect:@"pause"];
     }
@@ -133,11 +117,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void) resume {
     if(_isConnected) {
-        [_appRemote.playerAPI resume:^(id  _Nullable result, NSError * _Nullable error) {
-             if(error) {
-                NSLog(@"resume err: %@", error.description);
-            }
-        }];
+        [_appRemote.playerAPI resume:[self logCallbackAndEmit:@"resume"]];
     } else {
         [self connect:@"resume"];
     }
@@ -145,13 +125,9 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void) seek:(NSInteger)position {
     if(_isConnected) {
-        [_appRemote.playerAPI seekToPosition:position callback:^(id  _Nullable result, NSError * _Nullable error) {
-            if(error) {
-                NSLog(@"seek err: %@", error.description);
-            }
-        }];
+        [_appRemote.playerAPI seekToPosition:position callback:[self logCallbackAndEmit:@"seekToPosition"]];
     } else {
-        _position = position;
+        _position = &position;
         [self connect:@"seek"];
     }
 }
@@ -189,9 +165,7 @@ static SpotifyRemote *sharedInstance = nil;
 - (void) subToPlayerState {
     _appRemote.playerAPI.delegate = self;
 
-    [_appRemote.playerAPI subscribeToPlayerState:^(id  _Nullable result, NSError * _Nullable error) {
-        NSLog(@"%@", error.description);
-    }];
+    [_appRemote.playerAPI subscribeToPlayerState:[self logCallbackAndEmit:@"subscribeToPlayerState"]];
 }
 
 
@@ -217,6 +191,20 @@ static SpotifyRemote *sharedInstance = nil;
         
     [self.commandDelegate sendPluginResult: result
                                 callbackId: self.eventCallbackId];
+}
+
+- (void (^)(id _Nullable, NSError * _Nullable))logCallbackAndEmit:(NSString*)context {
+    return ^(id  _Nullable result, NSError * _Nullable error) {
+        if(error != nil){
+            NSLog(@" %@ %@", context, error.description);
+            [self emit:[NSString stringWithFormat:@"%@,%@", context, error.description] withError:@"YES"];
+        } else {
+            if(result) {
+                NSLog(@" %@ %s", context, "SUCCESS");
+                [self emit:[NSString stringWithFormat:@"%@,%s", context, "SUCCESS"] withError:nil];
+            }
+        }
+    };
 }
 
 @end
