@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)doConnect:(CDVInvokedUrlCommand*)command;
 -(void)getToken:(CDVInvokedUrlCommand*)command;
 -(void)playURI:(CDVInvokedUrlCommand*)command;
+-(void)queueURI:(CDVInvokedUrlCommand*)command;
 -(void)pause:(CDVInvokedUrlCommand*)command;
 -(void)resume:(CDVInvokedUrlCommand*)command;
 -(void)seek:(CDVInvokedUrlCommand*)command;

@@ -59,6 +59,19 @@ SpotifyCall.playURI = function(onSuccess, onError, playuri) {
 };
 
 /**
+ * Function that queues a track in the Spotify app.
+ * If appRemote is not connected - this will happen first.
+ *
+ * @param {function} onSuccess Function to call when a session has been initialized. Event is returned.
+ * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
+ * @param {string} playURI URI of the requested track.
+ */
+
+SpotifyCall.queueURI = function(onSuccess, onError, playuri) {
+    exec(onSuccess, onError, "SpotifyCall", "queueURI", [playuri]);
+};
+
+/**
  * Function that pauses the currently playing track in the Spotify app.
  * If appRemote is not connected - this will happen first.
  *

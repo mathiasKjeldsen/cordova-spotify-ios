@@ -13,8 +13,9 @@
 
 -(void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
 -(void)playUri:(NSString*)uri;
+-(void)queueUri:(NSString*)uri;
+-(void)seek:(NSInteger)position;
 -(void)pause;
 -(void)resume;
--(void)seek:(NSInteger)position;
 -(void)getPlayerState;
 @end
