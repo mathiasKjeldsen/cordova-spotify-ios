@@ -14,6 +14,7 @@ static SpotifyRemote *sharedInstance = nil;
     NSString* _connectCallbackMessage;
     NSString* _uri;
     NSInteger* _position;
+    NSInteger _index;
     NSDictionary* _contentItem;
     SPTAppRemote* _appRemote;
 }
@@ -82,7 +83,7 @@ static SpotifyRemote *sharedInstance = nil;
         } else if([_connectCallbackMessage  isEqual: @"queueUri"]) {
             [self queueUri:_uri];
         } else if([_connectCallbackMessage  isEqual: @"getPlaylistAndPlay"]) {
-            [self getPlaylistAndPlay:_uri];
+            [self getPlaylistAndPlay:_uri index:_index];
         }
     }
 }
@@ -151,6 +152,7 @@ static SpotifyRemote *sharedInstance = nil;
         }];
     } else {
         _uri = uri;
+        _index = index;
         [self connect:@"getPlaylistAndPlay"];
     }
 }
