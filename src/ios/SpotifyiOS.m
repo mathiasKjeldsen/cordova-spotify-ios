@@ -77,8 +77,20 @@ static SpotifyiOS *sharedInstance = nil;
 }
 
 - (void) initialize:(NSDictionary*)options{
-    _options = options;
-    [self initializeSessionManager:options];
+    _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
+    _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
+    _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
+    
+    SPTScope scope = SPTAppRemoteControlScope | SPTUserFollowReadScope;
+    
+    _sessionManager = [SPTSessionManager sessionManagerWithConfiguration:_apiConfiguration delegate:self];
+    
+    if (@available(iOS 11, *)) {
+        [_sessionManager
+             initiateSessionWithScope:scope
+             options:SPTDefaultAuthorizationOption
+        ];
+    }
 }
 
 - (void)emit:(NSString*)message withError:(NSString*)err {
@@ -107,21 +119,4 @@ static SpotifyiOS *sharedInstance = nil;
                                 callbackId: self.eventCallbackId];
 }
 
-
-- (void)initializeSessionManager:(NSDictionary*)options{
-    _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
-    _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
-    _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
-    
-    SPTScope scope = SPTAppRemoteControlScope | SPTUserFollowReadScope;
-    
-    _sessionManager = [SPTSessionManager sessionManagerWithConfiguration:_apiConfiguration delegate:self];
-    
-    if (@available(iOS 11, *)) {
-        [_sessionManager
-             initiateSessionWithScope:scope
-             options:SPTDefaultAuthorizationOption
-        ];
-    }
-}
 @end

@@ -38,9 +38,7 @@ static SpotifyCall *sharedInstance = nil;
 - (void) getToken:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *result = [CDVPluginResult
             resultWithStatus: CDVCommandStatus_OK
-                                   messageAsDictionary:@{
-                                   @"accessToken": [[SpotifyiOS sharedInstance] accessToken]
-                               }];
+                                   messageAsString:[[SpotifyiOS sharedInstance] accessToken]];
 
     return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
 }

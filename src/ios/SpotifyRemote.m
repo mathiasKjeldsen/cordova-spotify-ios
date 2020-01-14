@@ -208,15 +208,18 @@ static SpotifyRemote *sharedInstance = nil;
     
     CDVPluginResult *result;
     if(err) {
-        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
-        messageAsDictionary:@{
+        NSDictionary *response = @{
             @"error": message
-        }];
+        };
+        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR
+        messageAsDictionary: response];
     } else {
-        [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-        messageAsDictionary:@{
+        NSDictionary *response = @{
             @"success": message
-        }];
+        };
+        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+        messageAsDictionary:response];
+        NSLog(@"%@", response);
     }
         
     [result setKeepCallbackAsBool:YES];
