@@ -62,8 +62,21 @@ static SpotifyiOS *sharedInstance = nil;
 
 - (void)sessionManager:(SPTSessionManager *)manager didInitiateSession:(SPTSession *)session
 {
-    NSLog(@"Auth token: %@", session.accessToken);
-    [self emit:session.accessToken withError:nil];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm:ssSSSSSS"];
+    NSString *stringDate = [dateFormatter stringFromDate:session.expirationDate];
+    
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+    messageAsDictionary:@{
+        @"accessToken": session.accessToken,
+        @"refreshToken": session.refreshToken,
+        @"expirationDate": stringDate
+    }];
+    [result setKeepCallbackAsBool:YES];
+        
+    [self.commandDelegate sendPluginResult: result
+                                callbackId: self.eventCallbackId];
 }
 
 - (void)sessionManager:(SPTSessionManager *)manager didFailWithError:(NSError *)error
@@ -93,6 +106,10 @@ static SpotifyiOS *sharedInstance = nil;
     }
 }
 
+- (void) renewSession {
+    [_sessionManager renewSession];
+}
+
 - (void)emit:(NSString*)message withError:(NSString*)err {
     
     if (self.eventCallbackId == nil) {
@@ -107,7 +124,7 @@ static SpotifyiOS *sharedInstance = nil;
             @"error": message
         }];
     } else {
-        [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
+        result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
         messageAsDictionary:@{
             @"success": message
         }];
