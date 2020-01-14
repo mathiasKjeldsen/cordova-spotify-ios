@@ -6,5 +6,6 @@
 +(id)SPTAppRemotePlaybackRestrictions:(NSObject<SPTAppRemotePlaybackRestrictions>*) restrictions;
 +(id)SPTAppRemotePlaybackOptions:(NSObject<SPTAppRemotePlaybackOptions>*) options;
 +(id)SPTAppRemoteTrack:(NSObject<SPTAppRemoteTrack> *) track;
++(id)SPTAppRemoteContentItem:(NSObject<SPTAppRemoteContentItem> *) item;
 
 @end

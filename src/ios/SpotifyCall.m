@@ -25,7 +25,6 @@ static SpotifyCall *sharedInstance = nil;
     return sharedInstance;
 }
 
-
 - (void)initialize:(CDVInvokedUrlCommand*)command {
     [[SpotifyiOS sharedInstance] setCallbackId:command.callbackId];
     [[SpotifyiOS sharedInstance] initialize:command.arguments[0]];
@@ -39,7 +38,6 @@ static SpotifyCall *sharedInstance = nil;
     CDVPluginResult *result = [CDVPluginResult
             resultWithStatus: CDVCommandStatus_OK
                                messageAsString: [[SpotifyiOS sharedInstance] accessToken]];
-
     return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
 }
 
@@ -72,6 +70,11 @@ static SpotifyCall *sharedInstance = nil;
 - (void) getPlayerState:(CDVInvokedUrlCommand*)command {
     [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
     return [[SpotifyRemote sharedInstance] getPlayerState];
+}
+
+- (void) playPlaylist:(CDVInvokedUrlCommand*)command {
+    [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
+    return [[SpotifyRemote sharedInstance] getPlaylistAndPlay:command.arguments[0]];
 }
 
 @end

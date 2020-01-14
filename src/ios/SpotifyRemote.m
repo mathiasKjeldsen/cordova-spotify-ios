@@ -14,6 +14,7 @@ static SpotifyRemote *sharedInstance = nil;
     NSString* _connectCallbackMessage;
     NSString* _uri;
     NSInteger* _position;
+    NSDictionary* _contentItem;
     SPTAppRemote* _appRemote;
 }
 - (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
@@ -80,6 +81,8 @@ static SpotifyRemote *sharedInstance = nil;
             [self seek:*(_position)];
         } else if([_connectCallbackMessage  isEqual: @"queueUri"]) {
             [self queueUri:_uri];
+        } else if([_connectCallbackMessage  isEqual: @"getPlaylistAndPlay"]) {
+            [self getPlaylistAndPlay:_uri];
         }
     }
 }
@@ -87,7 +90,6 @@ static SpotifyRemote *sharedInstance = nil;
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didFailConnectionAttemptWithError:(nullable NSError *)error {
     NSLog(@"didFailConnectionAttemptWithError %@", error.description);
 }
-
 
 - (void)playUri:(NSString*)uri{
     if(_isConnected) {
@@ -132,6 +134,31 @@ static SpotifyRemote *sharedInstance = nil;
     }
 }
 
+- (void) getPlaylistAndPlay:(NSString*)uri {
+    if(_isConnected) {
+        [_appRemote.contentAPI fetchContentItemForURI:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
+            if(result) {
+                NSLog( @"%@", [SpotifyConvert SPTAppRemoteContentItem:result] );
+                NSObject<SPTAppRemoteContentItem> *item = result;
+                if(item.playable) {
+                    [self playItemFromIndex:result index:0];
+                } else {
+                    [self emit:@"The provided playlist can not be played." withError:@"YES"];
+                }
+            } else {
+                NSLog(@"%@", error.description);
+            }
+        }];
+    } else {
+        _uri = uri;
+        [self connect:@"getPlaylistAndPlay"];
+    }
+}
+
+- (void) playItemFromIndex:(NSObject<SPTAppRemoteContentItem>*)item index:(NSInteger*)index {
+    [_appRemote.playerAPI playItem:item skipToTrackIndex:*index callback:[self logCallbackAndEmit:@"playItemFromIndex"]];
+}
+
 - (void) getPlayerState {
     if(_isConnected) {
         [_appRemote.playerAPI getPlayerState:^(id  _Nullable result, NSError * _Nullable error) {
@@ -164,8 +191,8 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void) subToPlayerState {
     _appRemote.playerAPI.delegate = self;
-
-    [_appRemote.playerAPI subscribeToPlayerState:[self logCallbackAndEmit:@"subscribeToPlayerState"]];
+    [_appRemote.playerAPI subscribeToPlayerState:^(id  _Nullable result, NSError * _Nullable error) {
+    }];
 }
 
 
@@ -188,6 +215,7 @@ static SpotifyRemote *sharedInstance = nil;
         result = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
         messageAsString: message];
     }
+    [result setKeepCallbackAsBool:YES];
         
     [self.commandDelegate sendPluginResult: result
                                 callbackId: self.eventCallbackId];

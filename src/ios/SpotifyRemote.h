@@ -13,6 +13,7 @@
 
 -(void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
 -(void)playUri:(NSString*)uri;
+-(void)getPlaylistAndPlay:(NSString*)uri;
 -(void)queueUri:(NSString*)uri;
 -(void)seek:(NSInteger)position;
 -(void)pause;

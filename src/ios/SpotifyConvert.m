@@ -82,4 +82,18 @@
     };
 }
 
++(id)SPTAppRemoteContentItem:(NSObject<SPTAppRemoteContentItem> *) item{
+    if(item == nil){
+        return [NSNull null];
+    }
+    return @{
+             @"title":item.title,
+             @"subtitle":item.subtitle,
+             @"id":item.identifier,
+             @"uri":item.URI,
+             @"playable":[NSNumber numberWithBool:item.playable],
+             @"container":[NSNumber numberWithBool:item.container]
+    };
+}
+
 @end
