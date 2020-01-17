@@ -51,7 +51,7 @@ static SpotifyRemote *sharedInstance = nil;
     }
 }
 
-- (BOOL)isconnected {
+- (BOOL)isConnected {
     return (_appRemote != nil && _appRemote.isConnected) ? YES : NO;
 }
 
