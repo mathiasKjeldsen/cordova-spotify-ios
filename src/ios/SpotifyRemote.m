@@ -51,6 +51,10 @@ static SpotifyRemote *sharedInstance = nil;
     }
 }
 
+- (BOOL)isconnected {
+    return (_appRemote != nil && _appRemote.isConnected) ? YES : NO;
+}
+
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
     NSLog(@"App Remote disconnected");
     _isConnected = NO;
