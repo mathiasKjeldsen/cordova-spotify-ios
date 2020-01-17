@@ -25,6 +25,14 @@ static SpotifyCall *sharedInstance = nil;
     return sharedInstance;
 }
 
+- (void)isAppRemoteConnected:(CDVInvokedUrlCommand*)command {  
+    CDVPluginResult *result = [CDVPluginResult
+            resultWithStatus: CDVCommandStatus_OK
+                                   messageAsBool:[[SpotifyRemote sharedInstance] isConnected];
+
+    return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
+}
+
 - (void)initialize:(CDVInvokedUrlCommand*)command {
     [[SpotifyiOS sharedInstance] setCallbackId:command.callbackId];
     [[SpotifyiOS sharedInstance] initialize:command.arguments[0]];
