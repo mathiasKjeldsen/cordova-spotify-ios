@@ -12,6 +12,7 @@
 +(instancetype)sharedInstance;
 
 -(void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
+-(void)checkIfSpotifyIsActive;
 -(void)playUri:(NSString*)uri;
 -(void)getPlaylistAndPlay:(NSString*)uri index:(NSInteger)index;
 -(void)queueUri:(NSString*)uri;
