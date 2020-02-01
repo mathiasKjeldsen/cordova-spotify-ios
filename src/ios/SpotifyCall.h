@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)initialize:(CDVInvokedUrlCommand*)command;
 -(void)doConnect:(CDVInvokedUrlCommand*)command;
 -(void)getToken:(CDVInvokedUrlCommand*)command;
+-(void)isSpotifyAppInstalled:(CDVInvokedUrlCommand*)command;
 -(void)playURI:(CDVInvokedUrlCommand*)command;
 -(void)queueURI:(CDVInvokedUrlCommand*)command;
 -(void)pause:(CDVInvokedUrlCommand*)command;

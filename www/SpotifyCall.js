@@ -20,6 +20,17 @@ SpotifyCall.initialize = function(onSuccess, onError, options) {
 };
 
 /**
+ * Check if the Spotify App is installed on the device
+ *
+ * @param {function} onSuccess Function to call when a session has been initialized. Boolean returned.
+ * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
+ */
+
+SpotifyCall.isSpotifyAppInstalled = function(onSuccess, onError) {
+    exec(onSuccess, onError, "SpotifyCall", "isSpotifyAppInstalled", []);
+};
+
+/**
  * If a session has been initiated and the user requests to play a track - the Spotify app must be woken using authorizeAndPlay.
  * This function wakes up the Spotify app and starts playing the requests URI. 
  *

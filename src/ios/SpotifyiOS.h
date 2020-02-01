@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void) setCallbackId:(NSString *) callbackId;
 
+-(BOOL)isSpotifyAppInstalled;
+
 -(BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
 
 +(SpotifyiOS*)sharedInstance;

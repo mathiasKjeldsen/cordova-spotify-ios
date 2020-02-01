@@ -42,6 +42,10 @@ static SpotifyiOS *sharedInstance = nil;
     return sharedInstance;
 }
 
+- (BOOL)isSpotifyAppInstalled {
+    return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"spotify:"]];
+}
+
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
     BOOL returnVal = NO;
