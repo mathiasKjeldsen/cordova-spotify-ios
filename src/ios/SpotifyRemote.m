@@ -15,6 +15,7 @@ static SpotifyRemote *sharedInstance = nil;
     NSInteger* _position;
     NSInteger _index;
     NSDictionary* _contentItem;
+    BOOL _isPaused;
     SPTAppRemote* _appRemote;
 }
 - (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
@@ -201,6 +202,15 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
     NSLog( @"%@", [SpotifyConvert SPTAppRemotePlayerState:playerState] );
+    if(playerState.paused && !_isPaused) {
+        [self.commandDelegate
+            evalJs:@"window.cordova.plugins.SpotifyCall.events.onPause()"];
+    }
+    
+    if(!playerState.paused && _isPaused) {
+        [self.commandDelegate evalJs:@"window.cordova.plugins.SpotifyCall.events.onResume()"];
+    }
+    _isPaused = playerState.paused;
 }
 
 - (void)emit:(NSString*)message withError:(NSString*)err {

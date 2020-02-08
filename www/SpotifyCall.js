@@ -1,6 +1,6 @@
 var exec = require('cordova/exec');
 
-var SpotifyCall = function() {}
+var SpotifyCall = function () { }
 
 /**
  * Initialize a session in the Spotify App
@@ -15,7 +15,7 @@ var SpotifyCall = function() {}
  * * tokenRefreshURL: string
  */
 
-SpotifyCall.initialize = function(onSuccess, onError, options) {
+SpotifyCall.initialize = function (onSuccess, onError, options) {
     exec(onSuccess, onError, "SpotifyCall", "initialize", [options]);
 };
 
@@ -26,9 +26,21 @@ SpotifyCall.initialize = function(onSuccess, onError, options) {
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  */
 
-SpotifyCall.isSpotifyAppInstalled = function(onSuccess, onError) {
+SpotifyCall.isSpotifyAppInstalled = function (onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "isSpotifyAppInstalled", []);
 };
+
+/**
+ * Check if the Spotify AppRemote is connected
+ *
+ * @param {function} onSuccess Function to call when a session has been initialized. Boolean returned.
+ * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
+ */
+
+SpotifyCall.isSpotifyAppInstalled = function (onSuccess, onError) {
+    exec(onSuccess, onError, "SpotifyCall", "isAppRemoteConnected", []);
+};
+
 
 /**
  * If a session has been initiated and the user requests to play a track - the Spotify app must be woken using authorizeAndPlay.
@@ -41,7 +53,7 @@ SpotifyCall.isSpotifyAppInstalled = function(onSuccess, onError) {
  * @param {string} playURI URI of the requested track.
  */
 
-SpotifyCall.doConnect = function(onSuccess, onError, token, playURI) {
+SpotifyCall.doConnect = function (onSuccess, onError, token, playURI) {
     exec(onSuccess, onError, "SpotifyCall", "doConnect", [token, playURI]);
 };
 
@@ -52,7 +64,7 @@ SpotifyCall.doConnect = function(onSuccess, onError, token, playURI) {
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  */
 
-SpotifyCall.getToken = function(onSuccess, onError) {
+SpotifyCall.getToken = function (onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "getToken", []);
 };
 
@@ -65,7 +77,7 @@ SpotifyCall.getToken = function(onSuccess, onError) {
  * @param {string} playURI URI of the requested track.
  */
 
-SpotifyCall.playURI = function(onSuccess, onError, playuri) {
+SpotifyCall.playURI = function (onSuccess, onError, playuri) {
     exec(onSuccess, onError, "SpotifyCall", "playURI", [playuri]);
 };
 
@@ -78,7 +90,7 @@ SpotifyCall.playURI = function(onSuccess, onError, playuri) {
  * @param {string} playURI URI of the requested track.
  */
 
-SpotifyCall.queueURI = function(onSuccess, onError, playuri) {
+SpotifyCall.queueURI = function (onSuccess, onError, playuri) {
     exec(onSuccess, onError, "SpotifyCall", "queueURI", [playuri]);
 };
 
@@ -93,7 +105,7 @@ SpotifyCall.queueURI = function(onSuccess, onError, playuri) {
 
  */
 
-SpotifyCall.playPlaylistByUriAndIndex = function(onSuccess, onError, playuri, index) {
+SpotifyCall.playPlaylistByUriAndIndex = function (onSuccess, onError, playuri, index) {
     exec(onSuccess, onError, "SpotifyCall", "playPlaylist", [playuri, index]);
 };
 
@@ -105,7 +117,7 @@ SpotifyCall.playPlaylistByUriAndIndex = function(onSuccess, onError, playuri, in
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  */
 
-SpotifyCall.pause = function(onSuccess, onError) {
+SpotifyCall.pause = function (onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "pause", []);
 };
 
@@ -117,7 +129,7 @@ SpotifyCall.pause = function(onSuccess, onError) {
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  */
 
-SpotifyCall.resume = function(onSuccess, onError) {
+SpotifyCall.resume = function (onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "resume", []);
 };
 
@@ -130,7 +142,7 @@ SpotifyCall.resume = function(onSuccess, onError) {
  * @param {number} position Target position in milliseconds
  */
 
-SpotifyCall.seek = function(onSuccess, onError, position) {
+SpotifyCall.seek = function (onSuccess, onError, position) {
     exec(onSuccess, onError, "SpotifyCall", "seek", [position]);
 };
 
@@ -142,9 +154,18 @@ SpotifyCall.seek = function(onSuccess, onError, position) {
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  */
 
-
-SpotifyCall.getPlayerState = function(onSuccess, onError) {
+SpotifyCall.getPlayerState = function (onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "getPlayerState", []);
 };
+
+/**
+ * Events
+ */
+
+SpotifyCall.events = {
+    onPause: function () { },
+    onResume: function () { }
+}
+
 
 module.exports = SpotifyCall;
