@@ -98,7 +98,7 @@ static SpotifyiOS *sharedInstance = nil;
     _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
     _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
     
-    SPTScope scope = SPTAppRemoteControlScope | SPTUserFollowReadScope;
+    SPTScope scope = SPTAppRemoteControlScope | SPTUserFollowReadScope | SPTPlaylistModifyPrivateScope;
     
     _sessionManager = [SPTSessionManager sessionManagerWithConfiguration:_apiConfiguration delegate:self];
     
