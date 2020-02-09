@@ -37,7 +37,7 @@ SpotifyCall.isSpotifyAppInstalled = function (onSuccess, onError) {
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  */
 
-SpotifyCall.isSpotifyAppInstalled = function (onSuccess, onError) {
+SpotifyCall.isAppRemoteConnected = function (onSuccess, onError) {
     exec(onSuccess, onError, "SpotifyCall", "isAppRemoteConnected", []);
 };
 
