@@ -59,6 +59,8 @@ static SpotifyRemote *sharedInstance = nil;
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
     NSLog(@"App Remote disconnected");
     _isConnected = NO;
+    [self.commandDelegate
+    evalJs:@"window.cordova.plugins.SpotifyCall.events.appRemoteStateChange(1)"];
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote {
@@ -66,6 +68,8 @@ static SpotifyRemote *sharedInstance = nil;
 }
 
 - (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)connectedRemote {
+    [self.commandDelegate
+    evalJs:@"window.cordova.plugins.SpotifyCall.events.appRemoteStateChange(2)"];
     NSLog(@"App Remote Connection Initiated");
     _isConnected = YES;
     [self subToPlayerState];
@@ -92,6 +96,8 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didFailConnectionAttemptWithError:(nullable NSError *)error {
     NSLog(@"didFailConnectionAttemptWithError %@", error.description);
+    [self.commandDelegate
+    evalJs:@"window.cordova.plugins.SpotifyCall.events.appRemoteStateChange(0)"];
 }
 
 - (void)playUri:(NSString*)uri{

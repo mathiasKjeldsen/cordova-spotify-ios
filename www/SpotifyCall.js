@@ -164,7 +164,15 @@ SpotifyCall.getPlayerState = function (onSuccess, onError) {
 
 SpotifyCall.events = {
     onPause: function () { },
-    onResume: function () { }
+    onResume: function () { },
+    /**
+     * 
+     * @param number state 
+     * 0 = didFailConnectionAttemptWithError
+     * 1 = didDisconnectWithError
+     * 2 = appRemoteDidEstablishConnection
+     */
+    appRemoteStateChange: function (state) {}
 }
 
 
