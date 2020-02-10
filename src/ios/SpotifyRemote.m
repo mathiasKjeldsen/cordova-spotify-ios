@@ -65,15 +65,14 @@ static SpotifyRemote *sharedInstance = nil;
     
 
     _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
-    
+        
     [_appRemote connect];
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
     NSLog(@"App Remote disconnected");
     _isConnected = NO;
-    [self.commandDelegate
-    evalJs:@"window.cordova.plugins.SpotifyCall.events.appRemoteStateChange(1)"];
+    [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.appRemoteStateChange(1)"];
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote {
@@ -81,8 +80,7 @@ static SpotifyRemote *sharedInstance = nil;
 }
 
 - (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)connectedRemote {
-    [self.commandDelegate
-    evalJs:@"window.cordova.plugins.SpotifyCall.events.appRemoteStateChange(2)"];
+    [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.appRemoteStateChange(2)"];
     NSLog(@"App Remote Connection Initiated");
     _isConnected = YES;
     [self subToPlayerState];
@@ -110,8 +108,8 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didFailConnectionAttemptWithError:(nullable NSError *)error {
     NSLog(@"didFailConnectionAttemptWithError %@", error.description);
-    [self.commandDelegate
-    evalJs:@"window.cordova.plugins.SpotifyCall.events.appRemoteStateChange(0)"];
+    
+    [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.appRemoteStateChange(0)"];
 }
 
 - (void)playUri:(NSString*)uri{
@@ -159,11 +157,8 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void) getPlaylistAndPlay:(NSString*)uri index:(NSInteger)index {
     if(_isConnected) {
-        NSLog(@"GONNA GET PLAYLIST NOW?");
-        NSLog(@"%@", uri);
         [_appRemote.contentAPI fetchContentItemForURI:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
             if(result) {
-                NSLog(@"FOUND SOMETHING:");
                 NSLog( @"%@", [SpotifyConvert SPTAppRemoteContentItem:result] );
                 NSObject<SPTAppRemoteContentItem> *item = result;
                 if(item.playable) {
@@ -172,7 +167,6 @@ static SpotifyRemote *sharedInstance = nil;
                     [self emit:@"The provided playlist can not be played." withError:@"YES"];
                 }
             } else {
-                NSLog(@"DIDNT FIND SHIT?");
                 [self emit:error.description withError:@"YES"];
             }
         }];
@@ -227,12 +221,11 @@ static SpotifyRemote *sharedInstance = nil;
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
     NSLog( @"%@", [SpotifyConvert SPTAppRemotePlayerState:playerState] );
     if(playerState.paused && !_isPaused) {
-        [self.commandDelegate
-            evalJs:@"window.cordova.plugins.SpotifyCall.events.onPause()"];
+        [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.onPause()"];
     }
     
     if(!playerState.paused && _isPaused) {
-        [self.commandDelegate evalJs:@"window.cordova.plugins.SpotifyCall.events.onResume()"];
+        [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.onResume()"];
     }
     _isPaused = playerState.paused;
 }
