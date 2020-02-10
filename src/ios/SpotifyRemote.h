@@ -13,6 +13,7 @@
 
 -(void)initializeAppRemote:(NSDictionary*)options accessToken:(NSString*)accessToken;
 -(BOOL)isConnected;
+-(void)connectAppRemote;
 -(void)playUri:(NSString*)uri;
 -(void)getPlaylistAndPlay:(NSString*)uri index:(NSInteger)index;
 -(void)queueUri:(NSString*)uri;

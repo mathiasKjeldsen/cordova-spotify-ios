@@ -63,6 +63,25 @@ SpotifyCall.doConnect = function (onSuccess, onError, options, accessToken) {
 };
 
 /**
+ * If a session has been initiated and the user requests to play a track - the Spotify app must be woken using authorizeAndPlay.
+ * This function wakes up the Spotify app and starts playing the requests URI. 
+ *
+ * @param {function} onSuccess Function to call when a session has been initialized. Event is returned.
+ * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
+ * 
+ *  @param {object} options Options to use for initialization:
+ * * clientId: string
+ * * redirectURL: string
+ * * tokenExhangeURL: string
+ * * tokenRefreshURL: string
+ * * playURI: string
+ */
+
+SpotifyCall.initAndPlay = function (onSuccess, onError, options) {
+    exec(onSuccess, onError, "SpotifyCall", "initAndPlay", [options]);
+};
+
+/**
  * Function that returns the accessToken for the current session.
  *
  * @param {function} onSuccess Function to call when a session has been initialized. AccessToken is returned.

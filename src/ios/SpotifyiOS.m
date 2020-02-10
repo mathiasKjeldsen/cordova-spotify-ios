@@ -110,6 +110,26 @@ static SpotifyiOS *sharedInstance = nil;
     }
 }
 
+-(void)initAndPlay:(NSDictionary *)options {
+    _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
+    _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
+    _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
+    _apiConfiguration.playURI = options[@"playURI"];
+    
+    SPTScope scope = SPTAppRemoteControlScope | SPTUserFollowReadScope | SPTPlaylistModifyPrivateScope;
+    
+    _sessionManager = [SPTSessionManager sessionManagerWithConfiguration:_apiConfiguration delegate:self];
+    
+    if (@available(iOS 11, *)) {
+        [_sessionManager
+             initiateSessionWithScope:scope
+             options:SPTDefaultAuthorizationOption
+        ];
+        [[SpotifyRemote sharedInstance] connectAppRemote];
+        [self emit:@"" withError:nil];
+    }
+}
+
 - (void) renewSession {
     [_sessionManager renewSession];
 }

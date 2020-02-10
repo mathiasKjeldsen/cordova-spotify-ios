@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(SpotifyCall*)sharedInstance;
 
 -(void)initialize:(CDVInvokedUrlCommand*)command;
+-(void)initAndPlay:(CDVInvokedUrlCommand*)command;
 -(void)doConnect:(CDVInvokedUrlCommand*)command;
 -(void)getToken:(CDVInvokedUrlCommand*)command;
 -(void)isSpotifyAppInstalled:(CDVInvokedUrlCommand*)command;

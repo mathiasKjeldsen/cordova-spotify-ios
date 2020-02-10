@@ -19,7 +19,7 @@ static SpotifyRemote *sharedInstance = nil;
     BOOL _isPaused;
     SPTAppRemote* _appRemote;
 }
-- (void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
+- (void)initializeAppRemote:(NSDictionary*)options accessToken:(NSString *)accessToken;
 @end
 
 @implementation SpotifyRemote
@@ -58,6 +58,13 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (BOOL)isConnected {
     return (_appRemote != nil && _appRemote.isConnected) ? YES : NO;
+}
+
+- (void)connectAppRemote {
+    _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
+    _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
+    
+    [_appRemote connect];
 }
 
 - (void)appRemote:(nonnull SPTAppRemote *)appRemote didDisconnectWithError:(nullable NSError *)error {
