@@ -11,6 +11,7 @@ static SpotifyiOS *sharedInstance = nil;
     NSDictionary* _options;
     SPTConfiguration* _apiConfiguration;
     SPTSessionManager* _sessionManager;
+    BOOL _initAndPlay;
 }
 
 @end
@@ -81,6 +82,12 @@ static SpotifyiOS *sharedInstance = nil;
         
     [self.commandDelegate sendPluginResult: result
                                 callbackId: self.eventCallbackId];
+    
+    if(_initAndPlay) {
+        _initAndPlay = NO;
+        [[SpotifyRemote sharedInstance] connectAppRemote];
+        [self emit:@"" withError:nil];
+    }
 }
 
 - (void)sessionManager:(SPTSessionManager *)manager didFailWithError:(NSError *)error
@@ -111,6 +118,7 @@ static SpotifyiOS *sharedInstance = nil;
 }
 
 -(void)initAndPlay:(NSDictionary *)options {
+    _initAndPlay = YES;
     _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
     _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
     _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
@@ -125,8 +133,6 @@ static SpotifyiOS *sharedInstance = nil;
              initiateSessionWithScope:scope
              options:SPTDefaultAuthorizationOption
         ];
-        [[SpotifyRemote sharedInstance] connectAppRemote];
-        [self emit:@"" withError:nil];
     }
 }
 
