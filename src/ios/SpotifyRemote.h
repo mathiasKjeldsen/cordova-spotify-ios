@@ -11,7 +11,7 @@
 
 +(instancetype)sharedInstance;
 
--(void)initializeAppRemote:(NSString*)accessToken playURI:(NSString*)uri;
+-(void)initializeAppRemote:(NSDictionary*)options accessToken:(NSString*)accessToken;
 -(BOOL)isConnected;
 -(void)playUri:(NSString*)uri;
 -(void)getPlaylistAndPlay:(NSString*)uri index:(NSInteger)index;
