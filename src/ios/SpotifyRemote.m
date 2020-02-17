@@ -94,8 +94,6 @@ static SpotifyRemote *sharedInstance = nil;
             [self pause];
         } else if([_connectCallbackMessage  isEqual: @"resume"]) {
             [self resume];
-        } else if([_connectCallbackMessage  isEqual: @"getPlayerState"]) {
-            [self getPlayerState];
         } else if([_connectCallbackMessage  isEqual: @"seek"]) {
             [self seek:*(_position)];
         } else if([_connectCallbackMessage  isEqual: @"queueUri"]) {
@@ -182,28 +180,6 @@ static SpotifyRemote *sharedInstance = nil;
     [_appRemote.playerAPI playItem:item skipToTrackIndex:index callback:[self logCallbackAndEmit:@"playItemFromIndex"]];
 }
 
-- (void) getPlayerState {
-    if(_isConnected) {
-        [_appRemote.playerAPI getPlayerState:^(id  _Nullable result, NSError * _Nullable error) {
-             if(error) {
-                NSLog(@"getPlayerState err: %@", error.description);
-             } else {
-                 if (self.eventCallbackId == nil) {
-                     NSLog(@"callbackid is nil");
-                     return;
-                 }
-                 CDVPluginResult *plResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK
-                     messageAsDictionary:[SpotifyConvert SPTAppRemotePlayerState:result]];
-                 
-                 [self.commandDelegate sendPluginResult: plResult
-                                             callbackId: self.eventCallbackId];
-             }
-        }];
-    } else {
-        [self connect:@"getPlayerState"];
-    }
-}
-
 - (void) connect:(NSString*)callback{
     _connectCallbackMessage = callback;
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
@@ -225,13 +201,12 @@ static SpotifyRemote *sharedInstance = nil;
         if([_playerState.track.URI isEqualToString:playerState.track.URI]) {
             NSLog(@" SAME SONG: %ld %ld", (long)_playerState.playbackPosition, (long)playerState.playbackPosition);
         } else {
-            NSMutableString *str = [NSMutableString stringWithFormat:@"window.cordova.plugins.spotifyCall.events.onTrackEnded([%@])",playerState.track.URI];
+            NSString *str = [NSString stringWithFormat:@"window.cordova.plugins.spotifyCall.events.onTrackEnded('%@')",playerState.track.URI];
             [self.commandDelegate evalJs:str];
             NSLog(@"SONG CHANGED %@ %@", _playerState.track.URI, playerState.track.URI);
         }
     }
     
-    NSLog(@"%@", playerState.track.URI);
     if(playerState.paused && !_isPaused) {
         [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.onPause()"];
     }

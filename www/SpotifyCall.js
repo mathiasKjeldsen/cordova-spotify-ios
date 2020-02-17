@@ -171,18 +171,6 @@ SpotifyCall.seek = function (onSuccess, onError, position) {
 };
 
 /**
- * Function that returns the Spotify app's current playerState.
- * If appRemote is not connected - this will happen first.
- *
- * @param {function} onSuccess Function to call when a session has been initialized. playerState object is returned.
- * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
- */
-
-SpotifyCall.getPlayerState = function (onSuccess, onError) {
-    exec(onSuccess, onError, "SpotifyCall", "getPlayerState", []);
-};
-
-/**
  * Events
  */
 

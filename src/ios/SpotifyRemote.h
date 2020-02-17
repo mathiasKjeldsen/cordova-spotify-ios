@@ -20,5 +20,4 @@
 -(void)seek:(NSInteger)position;
 -(void)pause;
 -(void)resume;
--(void)getPlayerState;
 @end
