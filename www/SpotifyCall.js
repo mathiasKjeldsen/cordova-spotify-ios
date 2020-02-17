@@ -189,6 +189,7 @@ SpotifyCall.getPlayerState = function (onSuccess, onError) {
 SpotifyCall.events = {
     onPause: function () { },
     onResume: function () { },
+    onTrackEnded: function (trackURI) { },
     /**
      * 
      * @param number state 
