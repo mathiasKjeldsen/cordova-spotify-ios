@@ -43,6 +43,11 @@ static SpotifyCall *sharedInstance = nil;
     [[SpotifyiOS sharedInstance] initAndPlay:command.arguments[0]];
 }
 
+- (void)authAndPlay:(CDVInvokedUrlCommand*)command {
+    [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
+    [[SpotifyRemote sharedInstance] initializeAppRemote:command.arguments[0] accessToken:command.arguments[1]];
+}
+
 - (void)connect:(CDVInvokedUrlCommand*)command {
     [[SpotifyRemote sharedInstance] setCallbackId:command.callbackId];
     return [[SpotifyRemote sharedInstance] connectAppRemote];

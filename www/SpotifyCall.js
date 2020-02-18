@@ -20,6 +20,24 @@ SpotifyCall.initialize = function (onSuccess, onError, options) {
 };
 
 /**
+ * Connect to AppRemote and Play
+ * 
+ * @param {function} onSuccess Function to call when a session has been initialized. Authorization token is returned.
+ * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
+ * 
+ *  @param {object} options Options to use for initialization:
+ * * clientId: string
+ * * redirectURL: string
+ * * tokenExhangeURL: string
+ * * tokenRefreshURL: string
+ *  *  @param {object} accessToken token to use for initialization
+ */
+
+SpotifyCall.authAndPlay = function (onSuccess, onError, options, accessToken) {
+    exec(onSuccess, onError, "SpotifyCall", "authAndPlay", [options, accessToken]);
+};
+
+/**
  * Check if the Spotify App is installed on the device
  *
  * @param {function} onSuccess Function to call when a session has been initialized. Boolean returned.
@@ -177,7 +195,7 @@ SpotifyCall.events = {
      * 1 = didDisconnectWithError
      * 2 = appRemoteDidEstablishConnection
      */
-    appRemoteStateChange: function (state) {}
+    appRemoteStateChange: function (state) { }
 }
 
 

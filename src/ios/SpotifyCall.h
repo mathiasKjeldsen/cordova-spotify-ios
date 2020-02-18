@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)seek:(CDVInvokedUrlCommand*)command;
 -(void)playPlaylist:(CDVInvokedUrlCommand*)command;
 -(void)isAppRemoteConnected:(CDVInvokedUrlCommand*)command;
+-(void)authAndPlay:(CDVInvokedUrlCommand*)command;
 @end
 
 NS_ASSUME_NONNULL_END
