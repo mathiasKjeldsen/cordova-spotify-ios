@@ -68,6 +68,7 @@ static SpotifyiOS *sharedInstance = nil;
 - (void)sessionManager:(SPTSessionManager *)manager didInitiateSession:(SPTSession *)session
 {
     
+    NSLog(@"%@", session);
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm:ssSSSSSS"];
     NSString *stringDate = [dateFormatter stringFromDate:session.expirationDate];

@@ -43,23 +43,15 @@ SpotifyCall.isAppRemoteConnected = function (onSuccess, onError) {
 
 
 /**
- * If a session has been initiated and the user requests to play a track - the Spotify app must be woken using authorizeAndPlay.
- * This function wakes up the Spotify app and starts playing the requests URI. 
+ * Connect to AppRemote
  *
  * @param {function} onSuccess Function to call when a session has been initialized. Event is returned.
  * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
  * 
- *  @param {object} options Options to use for initialization:
- * * clientId: string
- * * redirectURL: string
- * * tokenExhangeURL: string
- * * tokenRefreshURL: string
- * * playURI: string
- * @param {string} accessToken accessToken.
  */
 
-SpotifyCall.doConnect = function (onSuccess, onError, options, accessToken) {
-    exec(onSuccess, onError, "SpotifyCall", "doConnect", [options, accessToken]);
+SpotifyCall.connect = function (onSuccess, onError) {
+    exec(onSuccess, onError, "SpotifyCall", "connect", []);
 };
 
 /**

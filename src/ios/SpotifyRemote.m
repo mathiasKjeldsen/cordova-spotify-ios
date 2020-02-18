@@ -66,7 +66,7 @@ static SpotifyRemote *sharedInstance = nil;
     
 
     _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
-        
+    _appRemote.delegate = self;
     [_appRemote connect];
 }
 
@@ -81,6 +81,7 @@ static SpotifyRemote *sharedInstance = nil;
 }
 
 - (void)appRemoteDidEstablishConnection:(nonnull SPTAppRemote *)connectedRemote {
+    
     [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.appRemoteStateChange(2)"];
     NSLog(@"App Remote Connection Initiated");
     _isConnected = YES;
@@ -200,6 +201,11 @@ static SpotifyRemote *sharedInstance = nil;
     if(_playerState != nil) {
         if([_playerState.track.URI isEqualToString:playerState.track.URI]) {
             NSLog(@" SAME SONG: %ld %ld", (long)_playerState.playbackPosition, (long)playerState.playbackPosition);
+            if(_playerState.playbackPosition+5 > playerState.playbackPosition) {
+                NSLog(@"SONG ENDED! BUT ITS THE SAME SONG SO GO NEXT!");
+                NSString *str = [NSString stringWithFormat:@"window.cordova.plugins.spotifyCall.events.onTrackEnded('%@')",playerState.track.URI];
+                [self.commandDelegate evalJs:str];
+            }
         } else {
             NSString *str = [NSString stringWithFormat:@"window.cordova.plugins.spotifyCall.events.onTrackEnded('%@')",playerState.track.URI];
             [self.commandDelegate evalJs:str];
