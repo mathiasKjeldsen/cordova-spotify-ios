@@ -2,8 +2,6 @@
 #import <SpotifyiOS/SpotifyiOS.h>
 #import "SpotifyiOSHeaders.h"
 #import "SpotifyConvert.h"
-#define SPOTIFY_API_BASE_URL @"https://api.spotify.com/"
-#define SPOTIFY_API_URL(endpoint) [NSURL URLWithString:NSString_concat(SPOTIFY_API_BASE_URL, endpoint)]
 
 static SpotifyRemote *sharedInstance = nil;
 
@@ -17,8 +15,14 @@ static SpotifyRemote *sharedInstance = nil;
     NSDictionary* _contentItem;
     NSObject<SPTAppRemotePlayerState>* _playerState;
     SPTConfiguration* _apiConfiguration;
-    BOOL _isPaused;
     SPTAppRemote* _appRemote;
+    SPTAppRemoteConnectionParams* _appRemoteConnectionParams;
+    NSString* _accessToken;
+    BOOL _authAndPlay;
+    NSString* _playURI;
+    SPTSessionManager* _sessionManager;
+
+    
 }
 - (void)initializeAppRemote:(NSDictionary*)options accessToken:(NSString *)accessToken;
 @end
@@ -42,31 +46,40 @@ static SpotifyRemote *sharedInstance = nil;
     return sharedInstance;
 }
 
+- (BOOL) application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    return YES;
+}
+
 - (void)initializeAppRemote:(NSDictionary*)options accessToken:(NSString*)accessToken{
-    _apiConfiguration = [SPTConfiguration configurationWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
+    _accessToken = accessToken;
+    _authAndPlay = YES;
+    _playURI = options[@"playURI"];
+    _apiConfiguration = [[SPTConfiguration alloc] initWithClientID:options[@"clientID"] redirectURL:[NSURL URLWithString:options[@"redirectURL"]]];
     _apiConfiguration.tokenSwapURL = [NSURL URLWithString: options[@"tokenSwapURL"]];
     _apiConfiguration.tokenRefreshURL = [NSURL URLWithString: options[@"tokenRefreshURL"]];
-    _apiConfiguration.playURI = options[@"playURI"];
+    _apiConfiguration.playURI = _playURI;
+    
     
     _appRemote = [[SPTAppRemote alloc] initWithConfiguration:_apiConfiguration logLevel:SPTAppRemoteLogLevelDebug];
-
-    _appRemote.connectionParameters.accessToken = accessToken;
-
     _appRemote.delegate = self;
-    [_appRemote authorizeAndPlayURI:options[@"playURI"]];
-    [self emit:@"esketit" withError:nil];
+    [_appRemote authorizeAndPlayURI:_playURI];
 }
+
+-(void) authParamsFromURL:(NSURL *)url {
+    NSDictionary* parameters = [_appRemote authorizationParametersFromURL:url];
+    
+    NSString* token = parameters[SPTAppRemoteAccessTokenKey];
+    NSString* err = parameters[SPTAppRemoteErrorDescriptionKey];
+    _appRemote.connectionParameters.accessToken = token;
+    [_appRemote connect];
+}
+
 
 - (BOOL)isConnected {
     return (_appRemote != nil && _appRemote.isConnected) ? YES : NO;
 }
 
 - (void)connectAppRemote {
-    _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
-    
-
-    _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
-    _appRemote.delegate = self;
     [_appRemote connect];
 }
 
@@ -86,7 +99,7 @@ static SpotifyRemote *sharedInstance = nil;
     NSLog(@"App Remote Connection Initiated");
     _isConnected = YES;
     [self subToPlayerState];
-    [_appRemote.playerAPI setRepeatMode:1 callback:[self logCallbackAndEmit:@"setRepeatMode"]];
+    [_appRemote.playerAPI setRepeatMode:0 callback:[self logCallbackAndEmit:@"setRepeatMode"]];
     [_appRemote.playerAPI setShuffle:NO callback:[self logCallbackAndEmit:@"setShuffle"]];
     if(_connectCallbackMessage) {
         if([_connectCallbackMessage  isEqual: @"playUri"]) {
@@ -148,6 +161,7 @@ static SpotifyRemote *sharedInstance = nil;
 
 - (void) seek:(NSInteger)position {
     if(_isConnected) {
+        
         [_appRemote.playerAPI seekToPosition:position callback:[self logCallbackAndEmit:@"seekToPosition"]];
     } else {
         _position = &position;
@@ -159,7 +173,6 @@ static SpotifyRemote *sharedInstance = nil;
     if(_isConnected) {
         [_appRemote.contentAPI fetchContentItemForURI:uri callback:^(id  _Nullable result, NSError * _Nullable error) {
             if(result) {
-                NSLog( @"%@", [SpotifyConvert SPTAppRemoteContentItem:result] );
                 NSObject<SPTAppRemoteContentItem> *item = result;
                 if(item.playable) {
                     [self playItemFromIndex:result index:index];
@@ -178,13 +191,14 @@ static SpotifyRemote *sharedInstance = nil;
 }
 
 - (void) playItemFromIndex:(NSObject<SPTAppRemoteContentItem>*)item index:(NSInteger)index {
+    [_appRemote.playerAPI setRepeatMode:0 callback:[self logCallbackAndEmit:@"setRepeatMode"]];
     [_appRemote.playerAPI playItem:item skipToTrackIndex:index callback:[self logCallbackAndEmit:@"playItemFromIndex"]];
 }
 
 - (void) connect:(NSString*)callback{
     _connectCallbackMessage = callback;
-    _appRemote = [[SPTAppRemote alloc] initWithConfiguration:[[SpotifyiOS sharedInstance] configuration] logLevel:SPTAppRemoteLogLevelDebug];
-    _appRemote.connectionParameters.accessToken = [[SpotifyiOS sharedInstance] accessToken];
+    _appRemote = [[SPTAppRemote alloc] initWithConfiguration:_apiConfiguration logLevel:SPTAppRemoteLogLevelDebug];
+    _appRemote.connectionParameters.accessToken = _accessToken;
     _appRemote.delegate = self;
     [_appRemote connect];
 }
@@ -199,28 +213,19 @@ static SpotifyRemote *sharedInstance = nil;
 - (void)playerStateDidChange:(nonnull id<SPTAppRemotePlayerState>)playerState {
     
     if(_playerState != nil) {
-        if([_playerState.track.URI isEqualToString:playerState.track.URI]) {
-            NSLog(@" SAME SONG: %ld %ld", (long)_playerState.playbackPosition, (long)playerState.playbackPosition);
-            if(_playerState.playbackPosition+5 > playerState.playbackPosition) {
-                NSLog(@"SONG ENDED! BUT ITS THE SAME SONG SO GO NEXT!");
-                NSString *str = [NSString stringWithFormat:@"window.cordova.plugins.spotifyCall.events.onTrackEnded('%@')",playerState.track.URI];
-                [self.commandDelegate evalJs:str];
-            }
-        } else {
+        if(![_playerState.track.URI isEqualToString:playerState.track.URI]) {
             NSString *str = [NSString stringWithFormat:@"window.cordova.plugins.spotifyCall.events.onTrackEnded('%@')",playerState.track.URI];
             [self.commandDelegate evalJs:str];
-            NSLog(@"SONG CHANGED %@ %@", _playerState.track.URI, playerState.track.URI);
         }
     }
     
-    if(playerState.paused && !_isPaused) {
+    if(playerState.paused && !_playerState.isPaused) {
         [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.onPause()"];
     }
     
-    if(!playerState.paused && _isPaused) {
+    if(!playerState.paused && _playerState.isPaused) {
         [self.commandDelegate evalJs:@"window.cordova.plugins.spotifyCall.events.onResume()"];
     }
-    _isPaused = playerState.paused;
     _playerState = playerState;
 }
 

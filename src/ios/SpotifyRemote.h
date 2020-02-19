@@ -20,4 +20,6 @@
 -(void)seek:(NSInteger)position;
 -(void)pause;
 -(void)resume;
+-(void)emit:(NSString*)message withError:(NSString*)err;
+-(void)authParamsFromURL:(NSURL*)url;
 @end

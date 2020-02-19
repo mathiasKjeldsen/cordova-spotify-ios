@@ -49,7 +49,7 @@ static SpotifyiOS *sharedInstance = nil;
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
-    BOOL returnVal = NO;
+    BOOL returnVal = YES;
     if(_sessionManager != nil){
         NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:TRUE];
         NSURLQueryItem * errorDescription = [[[urlComponents queryItems] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", SPTAppRemoteErrorDescriptionKey]] firstObject];
@@ -58,8 +58,6 @@ static SpotifyiOS *sharedInstance = nil;
             returnVal = NO;
         }
         returnVal = [_sessionManager application:application openURL:URL options:options];
-    } else {
-        NSLog(@"sessionManager is nil");
     }
     
     return returnVal;
