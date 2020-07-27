@@ -168,6 +168,18 @@ SpotifyCall.resume = function (onSuccess, onError) {
 };
 
 /**
+ * Open the Spotify App by a given URL
+ *
+ * @param {function} onSuccess Function to call when a session has been initialized. Event is returned.
+ * @param {function} onError Function to call if a session could not be initialized. Error description is returned.
+ * @param {number} url URL to open in the Spotify app
+ */
+
+SpotifyCall.contentLinking = function (onSuccess, onError, url) {
+    exec(onSuccess, onError, "SpotifyCall", "contentLinking", [url]);
+};
+
+/**
  * Function that seeks to the provided position of the currently playing track in the Spotify app.
  * If appRemote is not connected - this will happen first.
  *
@@ -179,6 +191,7 @@ SpotifyCall.resume = function (onSuccess, onError) {
 SpotifyCall.seek = function (onSuccess, onError, position) {
     exec(onSuccess, onError, "SpotifyCall", "seek", [position]);
 };
+
 
 /**
  * Events
