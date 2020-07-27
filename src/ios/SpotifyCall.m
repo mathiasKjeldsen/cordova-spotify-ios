@@ -101,4 +101,14 @@ static SpotifyCall *sharedInstance = nil;
     return [[SpotifyRemote sharedInstance] getPlaylistAndPlay:command.arguments[0] index:index];
 }
 
+- (void) contentLinking:(CDVInvokedUrlCommand *)command {
+    CDVPluginResult *result = [CDVPluginResult
+    resultWithStatus: CDVCommandStatus_OK
+                           messageAsBool:[[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"spotify:"]]];
+    NSURL *url = [NSURL URLWithString:command.arguments[0]];
+    NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : @YES};
+    [[UIApplication sharedApplication] openURL:url options:options completionHandler:nil];
+
+    return [self.commandDelegate sendPluginResult: result callbackId: command.callbackId];
+}
 @end
