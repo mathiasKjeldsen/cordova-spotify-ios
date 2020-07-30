@@ -1,6 +1,8 @@
 # cordova-spotify-ios
 Cordova integration with the Spotify iOS SDK
 
+https://github.com/spotify/ios-sdk
+
 
 ### Install
 
@@ -55,6 +57,41 @@ this.spotifyiOS.initialize(({accessToken, refreshToken}) => {
     window.localStorage.setItem('refreshToken', refreshToken);
     window.localStorage.setItem('expirationDate', expirationDate);
 }, this.handleError, this.config);
+```
+
+
+## App Remote
+
+### Check if App Remote is connected
+
+```javascript
+this.spotifyiOS.isAppRemoteConnected(onSuccess); // true or false
+```
+
+### Play
+
+If App Remote is not connected
+```javascript
+this.spotifyiOS.authAndPlay(onSuccess, onError, config);
+```
+If App remote is connected
+```javascript
+this.spotifyiOS.queueURI(onSuccess, onError, playuri); // URI of the requested track
+this.spotifyiOS.playURI(onSuccess, onError, playuri); // URI of the requested track
+```
+
+#### Play playlist
+Requirements
+- PlaylistURI: spotify:playlist:**playlistid**
+- Index: Start index
+```javascript
+this.spotifyiOS.playPlaylistByUriAndIndex(onSucess, onError, playuri, index);
+```
+### Control
+```javascript
+this.spotifyiOS.resume(onSuccess, onError);
+this.spotifyiOS.pause(onSuccess, onError);
+this.spotifyiOS.seek(onSuccess, onError, position); // target position in milliseconds
 ```
 
 ## Events
