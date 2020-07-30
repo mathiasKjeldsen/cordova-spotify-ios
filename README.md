@@ -4,14 +4,36 @@ Cordova integration with the Spotify iOS SDK
 https://github.com/spotify/ios-sdk
 
 
-### Install
+## Install
 
 ```
 npm install cordova-spotify-ios
 ```
 
+Download the latest version of the Spotify iOS SDK and import it into Xcode
 
-### Access through window
+https://github.com/spotify/ios-sdk/releases
+
+
+## Spotify App Redirect
+For the Spotify App to be able to redirect back to your application, with a session, you need to add the following code to your AppDelegate in Xcode.
+
+```objective-c
+
+#import "SpotifyiOSHeaders.h"
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
+{
+    if([[SpotifyRemote sharedInstance]eventCallbackId] != nil) {
+        [[SpotifyRemote sharedInstance] emit:@"CONNECT" withError:nil];
+        [[SpotifyRemote sharedInstance] authParamsFromURL:URL];
+    }
+    return [[SpotifyiOS sharedInstance] application:application openURL:URL options:options];
+}
+```
+
+
+## Access through window
 ```javascript
 private spotifyiOS = window.cordova.plugins.spotifyCall
 ```
@@ -22,12 +44,12 @@ https://developer.spotify.com/dashboard/applications
 
 The Spotify App must be installed on the device for the plugin to work.
 
-### Check if Spotify is installed
+#### Check if Spotify is installed
 ```javascript
 this.spotifyiOS.isSpotifyAppInstalled(onSuccess); // true or false
 ```
 
-### Config
+#### Config
 
 A JSON object config needs to be assembled to initialize with the Spotify App
 
@@ -40,9 +62,7 @@ config: {
 },
 ```
 
-
-
-### Initialize a session with the Spotify App
+#### Initialize a session with the Spotify App
 ```javascript
 this.spotifyiOS.initialize(onSuccess, onError, config);
 ```
@@ -62,13 +82,13 @@ this.spotifyiOS.initialize(({accessToken, refreshToken}) => {
 
 ## App Remote
 
-### Check if App Remote is connected
+#### Check if App Remote is connected
 
 ```javascript
 this.spotifyiOS.isAppRemoteConnected(onSuccess); // true or false
 ```
 
-### Play
+#### Play
 
 If App Remote is not connected
 ```javascript
@@ -87,7 +107,7 @@ Requirements
 ```javascript
 this.spotifyiOS.playPlaylistByUriAndIndex(onSucess, onError, playuri, index);
 ```
-### Control
+#### Control
 ```javascript
 this.spotifyiOS.resume(onSuccess, onError);
 this.spotifyiOS.pause(onSuccess, onError);
