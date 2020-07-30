@@ -1,3 +1,5 @@
+#import "SpotifyiOSHeaders.h"
+
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)URL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
     if([[SpotifyRemote sharedInstance]eventCallbackId] != nil) {
