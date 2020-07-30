@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cordova-spotify-ios" version="0.0.1">
+        id="cordova-spotify-ios" version="1.0.0">
     <name>SpotifyCall</name>
     <description>Cordova Spotify iOS SDK Plugin</description>
     <js-module src="www/SpotifyCall.js" name="SpotifyCall">
