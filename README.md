@@ -120,7 +120,7 @@ this.spotifyiOS.seek(onSuccess, onError, position); // target position in millis
 this.spotifyiOS.events.onPause = () => {}
 this.spotifyiOS.events.onResume = () => {}
 this.spotifyiOS.events.onTrackEnded = (trackURI: string) => {}
-this.spotifyiOS.events.appRemoteStateChabge = (state: number) => {
+this.spotifyiOS.events.appRemoteStateChange = (state: number) => {
  0 = didFailConnectionAttemptWithError  
  1 = didDisconnectWithError
  2 = appRemoteDidEstablishConnection    
