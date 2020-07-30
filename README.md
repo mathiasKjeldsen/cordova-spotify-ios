@@ -7,7 +7,7 @@ https://github.com/spotify/ios-sdk
 ## Install
 
 ```
-npm install cordova-spotify-ios
+cordova plugin add cordova-spotify-ios
 ```
 
 Download the latest version of the Spotify iOS SDK and import it into Xcode
