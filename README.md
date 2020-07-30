@@ -18,6 +18,13 @@ private spotifyiOS = window.cordova.plugins.spotifyCall
 A Spotify developer application has to be registered in the Spotify developer dashboard
 https://developer.spotify.com/dashboard/applications
 
+The Spotify App must be installed on the device for the plugin to work.
+
+### Check if Spotify is installed
+```javascript
+this.spotifyiOS.isSpotifyAppInstalled(onSuccess); // true or false
+```
+
 ### Config
 
 A JSON object config needs to be assembled to initialize with the Spotify App
@@ -50,6 +57,16 @@ this.spotifyiOS.initialize(({accessToken, refreshToken}) => {
 }, this.handleError, this.config);
 ```
 
+## Events
 
+```javascript
+this.spotifyiOS.events.onPause = () => {}
+this.spotifyiOS.events.onResume = () => {}
+this.spotifyiOS.events.onTrackEnded = (trackURI: string) => {}
+this.spotifyiOS.events.appRemoteStateChabge = (state: number) => {
+ 0 = didFailConnectionAttemptWithError  
+ 1 = didDisconnectWithError
+ 2 = appRemoteDidEstablishConnection    
+}
 
-# window.cordova.plugins.spotifyCall
+```
