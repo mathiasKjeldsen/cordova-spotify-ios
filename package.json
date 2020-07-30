@@ -1,6 +1,6 @@
 {
     "name": "cordova-spotify-ios",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Cordova wrapper for the Spotify iOS SDK",
     "cordova": {
         "id": "cordova-spotify-ios"
